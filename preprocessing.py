@@ -22,9 +22,17 @@ def stem(doc):
 def preprocessing(array_of_docs):
     array_of_docs_preprocessed = []
     for doc in array_of_docs:
-        doc = tokenize(doc)
-        doc = normalize(doc)
-        doc = remove_stop_words(doc)
-        doc = stem(doc)
+        doc[0] = tokenize(doc[0])
+        doc[2] = tokenize(doc[2])
+
+        doc[0] = normalize(doc[0])
+        doc[2] = normalize(doc[2])
+
+        doc[0] = remove_stop_words(doc[0])
+        doc[2] = remove_stop_words(doc[2])
+
+        doc[0] = stem(doc[0])
+        doc[2] = stem(doc[2])
+
         array_of_docs_preprocessed.append(doc)
     return array_of_docs_preprocessed
