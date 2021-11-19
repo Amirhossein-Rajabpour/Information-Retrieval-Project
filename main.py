@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     # TODO 2: call functions for pre-processing
     #         takes numpy array as input --> outputs a pre-processed numpy array
-    array_of_docs = preprocessing.preprocessing(array_of_docs)
+    array_of_docs = preprocessing.preprocessing(array_of_docs, with_stop_words=True)
 
     # TODO 3: create positional index (and other necessary objects)
     #         takes a pre-processed numpy array in --> outputs positional index

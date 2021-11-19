@@ -1,12 +1,13 @@
 import hazm
 import numpy as np
 
+
 # TODO: extracting Tokens from data
 def tokenize(doc):
     print("enter tokenize")
     doc = "".join(doc)
     doc = hazm.sent_tokenize(doc)
-    doc = "".join(doc)      # TODO: here we remove the effect of sent_tokenize because we merge them all again in an array
+    doc = "".join(doc)  # TODO: here we remove the effect of sent_tokenize because we merge them all again in an array
     doc = hazm.word_tokenize(doc)
     print("doc", doc)
     return doc
@@ -38,8 +39,7 @@ def stem(doc, stemmer):
 
 
 # TODO: call all the preprocessing here
-def preprocessing(array_of_docs):
-
+def preprocessing(array_of_docs, with_stop_words=True):
     array_of_docs_preprocessed = []
     normalizer = hazm.Normalizer()
     stemmer = hazm.Stemmer()
@@ -54,14 +54,17 @@ def preprocessing(array_of_docs):
         # doc[0] = tokenize(doc[0])
         # doc[2] = tokenize(doc[2])
 
-        doc[0] = remove_stop_words(doc[0])
-        doc[2] = remove_stop_words(doc[2])
+        if with_stop_words:
+            doc[0] = remove_stop_words(doc[0])
+            doc[2] = remove_stop_words(doc[2])
 
         array_of_docs_preprocessed.append(doc)
     return array_of_docs_preprocessed
 
 
 if __name__ == '__main__':
-    tmp_data_for_preprocessing = np.array([[["اصلاح کتاب ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"], [0], ["ما هم برای وصل کردن آمدیم! ولی برای پردازش، جدا بهتر نیست؟"]], [[],[],[]]],dtype=object,)
-    arr = preprocessing(tmp_data_for_preprocessing)
+    tmp_data_for_preprocessing = np.array([[["اصلاح کتاب ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"], [0], ["ما هم برای وصل کردن آمدیم! ولی برای پردازش، جدا بهتر نیست؟"]],
+                                           [[], [0], []]],
+                                          dtype=object, )
+    arr = preprocessing(tmp_data_for_preprocessing, with_stop_words=True)
     print(arr)
