@@ -2,27 +2,30 @@
 # Information Retrieval project - Fall 2021
 import lists
 import pandas as pd
-import preprocessing
+# import preprocessing
 
 class Document:
-    def __init__(self, id, title, body, url):
+    def __init__(self, id, title, content, url):
         self.id = id
         self.title = title
-        self.body = body
+        self.content = content
         self.url = url
 
 
 if __name__ == '__main__':
-    # TODO 1: read excel file (with pandas and numpy)
-    #         takes excel file as input --> outputs a numpy array
+    # read excel file (with pandas and numpy)
+    # takes excel file as input --> outputs a numpy array
     docs_df = pd.read_excel("IR1_7k_news.xlsx")
-    array_of_docs = docs_df.to_numpy()
 
-    # TODO: create list of Document objects
+    # create list of Document objects
+    array_of_docs = []
+    for index, row in docs_df.iterrows():
+        document = Document(id=index, title=row["title"], content=row["content"], url=row["url"])
+        array_of_docs.append(document)
 
     # TODO 2: call functions for pre-processing
     #         takes numpy array as input --> outputs a pre-processed numpy array
-    array_of_docs = preprocessing.preprocessing(array_of_docs, with_stop_words=True)
+    # array_of_docs = preprocessing.preprocessing(array_of_docs, with_stop_words=True)
 
     # TODO 3: create positional index (and other necessary objects)
     #         takes a pre-processed numpy array in --> outputs positional index
