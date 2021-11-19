@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     # TODO 3: create positional index (and other necessary objects)
     #         takes a pre-processed numpy array in --> outputs positional index
-    positional_postings_lists = lists.create_positional_index(array_of_docs)
+    positional_index = lists.create_positional_index(array_of_docs)
 
     # TODO 4: write some functions to handle clients queries
     #         takes query --> outputs a list of related doc titles
