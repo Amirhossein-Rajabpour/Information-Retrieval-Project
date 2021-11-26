@@ -27,14 +27,13 @@ def remove_stop_words(doc):
 def stem(doc, stemmer):
     doc = doc.split(" ")
     for term_index in range(len(doc)):
-        # print(doc[term_index])
-        # print(stemmer.stem(doc[term_index]))
         doc[term_index] = stemmer.stem(doc[term_index])
     return doc
 
 
 # call all the preprocessing here
 def preprocessing(array_of_docs, with_stop_words=True):
+    stop_words = hazm.stopwords_list()
     array_of_docs_preprocessed = []
     normalizer = hazm.Normalizer()
     stemmer = hazm.Stemmer()

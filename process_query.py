@@ -13,7 +13,14 @@ def search_single_word(word, positional_index):
 
 
 def search_multi_word(query, positional_index):
-    pass
+    list_for_different_words = []
+    for word in query:
+        list_for_different_words.append(positional_index.get(word).docs_lists())
+    # now i should continue the search in the mutual docs
+    intersection_list = set(list_for_different_words[0])
+    for index in range(1, len(list_for_different_words)):
+        intersection_list = intersection_list.intersection(list_for_different_words[index])
+    return list(intersection_list)
 
 
 def process_query(query, positional_index):
@@ -27,6 +34,7 @@ def process_query(query, positional_index):
     # now we should search in our dataset
     if len(query) == 1:
         doc_ids = search_single_word(query[0], positional_index)
-        return doc_ids
     else:
-        search_multi_word(query, positional_index)
+        doc_ids = search_multi_word(query, positional_index)
+    return doc_ids
+

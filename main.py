@@ -60,9 +60,7 @@ if __name__ == '__main__':
     option = input("1) Create model\n2) Load previous model\n")
     if option == '1':
         # call functions for pre-processing
-        print('here')
         collection = preprocessing.preprocessing(collection, with_stop_words=True)
-        print('here2')
 
         # create positional index (and other necessary objects)
         positional_index = lists.create_positional_index(collection)
