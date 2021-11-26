@@ -33,7 +33,16 @@ def save_model(positional_index):
 
 
 def load_model(file_name):
-    pass
+    positional_index = {}
+    with open(file_name, 'r', encoding='utf-8') as json_file:
+        positional_index_json = json.load(json_file)
+    for term in positional_index_json:
+        term_object = lists.Term(string=term)
+        term_object.set_total_freq(positional_index_json[term]["total_freq"])
+        term_object.set_pos_in_each_doc(positional_index_json[term]["pos_in_each_doc"])
+        term_object.set_freq_in_each_doc(positional_index_json[term]["freq_in_each_doc"])
+        positional_index[term] = term_object
+    return positional_index
 
 
 if __name__ == '__main__':
@@ -58,7 +67,7 @@ if __name__ == '__main__':
         save_model(positional_index)
 
     elif option == '2':
-        positional_index = load_model("positional_index_json")
+        positional_index = load_model(file_name="positional_index_json.json")
     else:
         print("Wrong input!")
         exit()
