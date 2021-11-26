@@ -1,6 +1,5 @@
 import hazm
-import numpy as np
-from main import *
+# from main import *
 
 
 # extracting Tokens from data
@@ -55,18 +54,18 @@ def preprocessing(array_of_docs, with_stop_words=True):
     return array_of_docs_preprocessed
 
 
-if __name__ == '__main__':
-
-
-    tmp_arr = np.array(["ما اصلاح کتاب ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"])
-    tmp_arr2 = np.array(["اصلاح نويسه ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"])
-
-    array_of_docs = []
-    document1 = Document(id=1, title="title", content=tmp_arr, url="url")
-    document2 = Document(id=2, title="title2", content=tmp_arr2, url="url")
-
-    array_of_docs.append(document1)
-    array_of_docs.append(document2)
-
-    prepro_arr = preprocessing(array_of_docs, with_stop_words=False)
-    print(prepro_arr)
+# if __name__ == '__main__':
+#
+#
+#     tmp_arr = np.array(["ما اصلاح کتاب ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"])
+#     tmp_arr2 = np.array(["اصلاح نويسه ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"])
+#
+#     array_of_docs = []
+#     document1 = Document(id=1, title="title", content=tmp_arr, url="url")
+#     document2 = Document(id=2, title="title2", content=tmp_arr2, url="url")
+#
+#     array_of_docs.append(document1)
+#     array_of_docs.append(document2)
+#
+#     prepro_arr = preprocessing(array_of_docs, with_stop_words=False)
+#     print(prepro_arr)

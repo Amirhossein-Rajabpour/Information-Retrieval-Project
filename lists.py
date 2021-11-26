@@ -1,5 +1,4 @@
-import numpy as np
-from main import *
+# from main import *
 
 class Term:
     def __init__(self, string):
@@ -42,15 +41,15 @@ def create_positional_index(array_of_docs):
 
 
 
-if __name__ == '__main__':
-    tmp_arr = np.array(['ما', 'ه', 'ما'])
-    tmp_arr2 = np.array(['ما', 'ه', 'ما', 'برا', 'وصل', 'کردن', 'آمدیم!', 'ول', 'برا', 'پردازش،', 'جدا', 'به', 'نیست؟','اصلاح', 'کتاب', 'و', 'استفاده', 'از', 'نیم\u200cفاصله', 'پرداز', 'را', 'آس', 'می\u200cکند'])
-
-    array_of_docs = []
-    document1 = Document(id=111, title="title", content=tmp_arr, url="url")
-    document2 = Document(id=222, title="title2", content=tmp_arr2, url="url2")
-
-    array_of_docs.append(document1)
-    array_of_docs.append(document2)
-
-    terms_pos_index = create_positional_index(array_of_docs)
+# if __name__ == '__main__':
+#     tmp_arr = np.array(['ما', 'ه', 'ما'])
+#     tmp_arr2 = np.array(['ما', 'ه', 'ما', 'برا', 'وصل', 'کردن', 'آمدیم!', 'ول', 'برا', 'پردازش،', 'جدا', 'به', 'نیست؟','اصلاح', 'کتاب', 'و', 'استفاده', 'از', 'نیم\u200cفاصله', 'پرداز', 'را', 'آس', 'می\u200cکند'])
+#
+#     array_of_docs = []
+#     document1 = Document(id=111, title="title", content=tmp_arr, url="url")
+#     document2 = Document(id=222, title="title2", content=tmp_arr2, url="url2")
+#
+#     array_of_docs.append(document1)
+#     array_of_docs.append(document2)
+#
+#     terms_pos_index = create_positional_index(array_of_docs)
