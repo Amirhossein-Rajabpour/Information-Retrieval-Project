@@ -1,6 +1,27 @@
 import numpy as np
 from main import *
 
+class Term:
+    def __init__(self, string):
+        self.string = string
+        self.total_freq = 0
+        self.pos_in_each_doc = {}   # {doc_ic: list positions, ...}
+        self.freq_in_each_doc = {}  # {doc_id: freq, ...}
+
+    def docs_lists(self):
+        return self.pos_in_each_doc.keys()
+
+    def add_doc(self, doc_id, term_position):   # term is identified in this doc for the first time
+        self.pos_in_each_doc[doc_id] = []
+        self.pos_in_each_doc[doc_id].append(term_position)
+        self.freq_in_each_doc[doc_id] = 1
+        self.total_freq += 1
+
+    def update_doc(self, doc_id, term_position):
+        self.pos_in_each_doc[doc_id].append(term_position)
+        self.freq_in_each_doc[doc_id] += 1
+        self.total_freq += 1
+
 
 # it returns the positions of that term in that doc
 def find_positions_in_doc(term, doc):
@@ -11,29 +32,23 @@ def find_positions_in_doc(term, doc):
     return positions
 
 
-# TODO: create positional index
-# the structure of my positional index is like this:
-# positional_index = {
-#   word1: [frequency in all docs, {doc1: (freq in doc1, [positions in doc1]), doc2:(freq in doc2, [positions in doc2]), ...}],
-#   word2: [frequency in all docs, {doc1: (freq in doc1, [positions in doc1]), doc2:(freq in doc2, [positions in doc2]), ...}],
-#   ...
-# }
 def create_positional_index(array_of_docs):
-    positional_index = {}
-    for doc in array_of_docs:
-        for term in doc.content:
-            if term not in positional_index.keys():     # we are evaluating a new term (this is the first time that this term has appeared in all docs)
-                positions_in_doc = find_positions_in_doc(term, doc.content)
-                positions_dictionary = {doc.id: (len(positions_in_doc), positions_in_doc)}  # positions_dictionary didn't exist before for this term
-                positional_index[term] = [len(positions_in_doc), positions_dictionary]  # add the new term to the positional_index dictionary
-            elif term in positional_index.keys() and doc.id in positional_index.get(term)[1].keys():
-                pass    # everything is already calculated for this term (this term appeared in this doc more than once)
-            else:   # we had this term before in other docs but it is new in this doc
-                positions_in_doc = find_positions_in_doc(term, doc.content)
-                positional_index.get(term)[1][doc.id] = (len(positions_in_doc), positions_in_doc)    # TODO: positions_dictionary exists for this term and should be updated (error)
-                positional_index[term] = [positional_index.get(term)[0] + len(positions_in_doc), positions_dictionary]  # update the whole frequency of that term and its new positions_dictionary (with new doc)
 
-    return positional_index
+    terms = {}  # {term_string: term object}
+    for doc in array_of_docs:
+        term_index = 0
+        for term in doc.content:
+            if term not in terms.keys():   # if term is new in our collection
+                term_obj = Term(string=term)
+                term_obj.add_doc(doc.id, term_index)
+                terms[term] = term_obj
+            elif term in terms.keys() and doc.id not in terms.get(term).docs_lists():   # first time in this doc
+                terms[term].add_doc(doc.id, term_index)
+            else:   # term is not new in collection and in this doc
+                terms.get(term).update_doc(doc.id, term_index)
+            term_index += 1
+    return terms
+
 
 
 if __name__ == '__main__':
@@ -47,5 +62,5 @@ if __name__ == '__main__':
     array_of_docs.append(document1)
     array_of_docs.append(document2)
 
-    tmp_positional_index = create_positional_index(array_of_docs)
+    terms_pos_index = create_positional_index(array_of_docs)
     print("positional index:\n", tmp_positional_index)
