@@ -19,7 +19,7 @@ def find_titles(list_of_doc_ids, collection):
     list_of_doc_titles = []
     print(list_of_doc_ids)
     for doc in collection:
-        if doc.id in list_of_doc_ids:
+        if str(doc.id) in list_of_doc_ids:
             list_of_doc_titles.append(doc.title)
     return list_of_doc_titles
 
@@ -60,7 +60,9 @@ if __name__ == '__main__':
     option = input("1) Create model\n2) Load previous model\n")
     if option == '1':
         # call functions for pre-processing
+        print('here')
         collection = preprocessing.preprocessing(collection, with_stop_words=True)
+        print('here2')
 
         # create positional index (and other necessary objects)
         positional_index = lists.create_positional_index(collection)

@@ -8,9 +8,8 @@ def query_stemming(splitted_query, stemmer):
 
 
 def search_single_word(word, positional_index):
-    if word in positional_index.keys():
-        word_object = positional_index.get(word)
-        return word_object.docs_lists()
+    word_object = positional_index.get(word)
+    return word_object.docs_lists()
 
 
 def search_multi_word(query, positional_index):
@@ -28,5 +27,6 @@ def process_query(query, positional_index):
     # now we should search in our dataset
     if len(query) == 1:
         doc_ids = search_single_word(query[0], positional_index)
+        return doc_ids
     else:
         search_multi_word(query, positional_index)
