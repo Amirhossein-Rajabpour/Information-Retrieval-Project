@@ -49,7 +49,7 @@ def preprocessing(array_of_docs, with_stop_words=True):
         doc.content = normalize(doc.content, normalizer)
         doc.content = stem(doc.content, stemmer)
         # doc[0] = tokenize(doc[0])
-        if with_stop_words:
+        if not with_stop_words:
             doc.content = remove_stop_words(doc.content)
         array_of_docs_preprocessed.append(doc)
     return array_of_docs_preprocessed
