@@ -4,6 +4,7 @@ import lists
 import preprocessing
 import process_query
 import pandas as pd
+import json
 
 
 class Document:
@@ -16,14 +17,19 @@ class Document:
 
 def find_titles(list_of_doc_ids, collection):
     list_of_doc_titles = []
+    print(list_of_doc_ids)
     for doc in collection:
         if doc.id in list_of_doc_ids:
             list_of_doc_titles.append(doc.title)
     return list_of_doc_titles
 
 
-def save_model(positional_index, address):
-    pass
+def save_model(positional_index):
+    positional_index_json = {}
+    for term_str, term_object in positional_index.items():
+        positional_index_json[term_str] = term_object.__dict__
+    with open("positional_index_json.json", 'w', encoding='utf-8') as json_file:
+        json.dump(positional_index_json, json_file, indent=4, ensure_ascii=False)
 
 
 def load_model(file_name):
@@ -42,20 +48,17 @@ if __name__ == '__main__':
         document = Document(id=index, title=row["title"], content=row["content"], url=row["url"])
         collection.append(document)
 
-    option = input("1) Read dataset\n2) Load previous model\n")
+    option = input("1) Create model\n2) Load previous model\n")
     if option == '1':
-
-
         # call functions for pre-processing
         collection = preprocessing.preprocessing(collection, with_stop_words=True)
 
         # create positional index (and other necessary objects)
         positional_index = lists.create_positional_index(collection)
-        save_model(positional_index, ".")
+        save_model(positional_index)
 
     elif option == '2':
         positional_index = load_model("positional_index_json")
-
     else:
         print("Wrong input!")
         exit()
