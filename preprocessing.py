@@ -1,8 +1,9 @@
 import hazm
 import numpy as np
+from main import *
 
 
-# TODO: extracting Tokens from data
+# extracting Tokens from data
 def tokenize(doc):
     print("enter tokenize")
     doc = "".join(doc)
@@ -13,7 +14,7 @@ def tokenize(doc):
     return doc
 
 
-# TODO: normalizing texts
+# normalizing texts
 def normalize(doc, normalizer):
     doc = "".join(doc)
     doc = normalizer.normalize(doc)
@@ -21,12 +22,12 @@ def normalize(doc, normalizer):
     return doc
 
 
-# TODO: removing stop words and frequently used words
+# removing stop words and frequently used words
 def remove_stop_words(doc):
     return doc
 
 
-# TODO: stemming (may be a bit tricky)
+# stemming (may be a bit tricky)
 def stem(doc, stemmer):
     doc = doc.split(" ")
     for term_index in range(len(doc)):
@@ -38,33 +39,34 @@ def stem(doc, stemmer):
     return doc
 
 
-# TODO: call all the preprocessing here
+# call all the preprocessing here
 def preprocessing(array_of_docs, with_stop_words=True):
     array_of_docs_preprocessed = []
     normalizer = hazm.Normalizer()
     stemmer = hazm.Stemmer()
 
     for doc in array_of_docs:
-        doc[0] = normalize(doc[0], normalizer)
-        doc[2] = normalize(doc[2], normalizer)
-
-        doc[0] = stem(doc[0], stemmer)
-        doc[2] = stem(doc[2], stemmer)
-
+        doc.content = normalize(doc.content, normalizer)
+        doc.content = stem(doc.content, stemmer)
         # doc[0] = tokenize(doc[0])
-        # doc[2] = tokenize(doc[2])
-
         if with_stop_words:
-            doc[0] = remove_stop_words(doc[0])
-            doc[2] = remove_stop_words(doc[2])
-
+            doc.content = remove_stop_words(doc.content)
         array_of_docs_preprocessed.append(doc)
     return array_of_docs_preprocessed
 
 
 if __name__ == '__main__':
-    tmp_data_for_preprocessing = np.array([[["اصلاح کتاب ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"], [0], ["ما هم برای وصل کردن آمدیم! ولی برای پردازش، جدا بهتر نیست؟"]],
-                                           [[], [0], []]],
-                                          dtype=object, )
-    arr = preprocessing(tmp_data_for_preprocessing, with_stop_words=True)
-    print(arr)
+
+
+    tmp_arr = np.array(["ما اصلاح کتاب ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"])
+    tmp_arr2 = np.array(["اصلاح نويسه ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"])
+
+    array_of_docs = []
+    document1 = Document(id=1, title="title", content=tmp_arr, url="url")
+    document2 = Document(id=2, title="title2", content=tmp_arr2, url="url")
+
+    array_of_docs.append(document1)
+    array_of_docs.append(document2)
+
+    prepro_arr = preprocessing(array_of_docs, with_stop_words=False)
+    print(prepro_arr)

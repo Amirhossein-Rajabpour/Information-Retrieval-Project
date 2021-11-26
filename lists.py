@@ -54,4 +54,3 @@ if __name__ == '__main__':
     array_of_docs.append(document2)
 
     terms_pos_index = create_positional_index(array_of_docs)
-    print("positional index:\n", tmp_positional_index)
