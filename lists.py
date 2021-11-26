@@ -23,15 +23,6 @@ class Term:
         self.total_freq += 1
 
 
-# it returns the positions of that term in that doc
-def find_positions_in_doc(term, doc):
-    positions = []
-    for i in range(len(doc)):
-        if doc[i] == term:
-            positions.append(i)
-    return positions
-
-
 def create_positional_index(array_of_docs):
 
     terms = {}  # {term_string: term object}
