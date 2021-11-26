@@ -27,8 +27,8 @@ def remove_stop_words(doc):
 def stem(doc, stemmer):
     doc = doc.split(" ")
     for term_index in range(len(doc)):
-        print(doc[term_index])
-        print(stemmer.stem(doc[term_index]))
+        # print(doc[term_index])
+        # print(stemmer.stem(doc[term_index]))
         doc[term_index] = stemmer.stem(doc[term_index])
     return doc
 
