@@ -10,6 +10,15 @@ class Term:
     def docs_lists(self):
         return self.pos_in_each_doc.keys()
 
+    def set_total_freq(self, total_freq):
+        self.total_freq = total_freq
+
+    def set_pos_in_each_doc(self, pos_in_each_doc):
+        self.pos_in_each_doc = pos_in_each_doc
+
+    def set_freq_in_each_doc(self, freq_in_each_doc):
+        self.freq_in_each_doc = freq_in_each_doc
+
     def add_doc(self, doc_id, term_position):   # term is identified in this doc for the first time
         self.pos_in_each_doc[doc_id] = []
         self.pos_in_each_doc[doc_id].append(term_position)
