@@ -4,12 +4,10 @@ import hazm
 
 # extracting Tokens from data
 def tokenize(doc):
-    print("enter tokenize")
     doc = "".join(doc)
     doc = hazm.sent_tokenize(doc)
     doc = "".join(doc)  # TODO: here we remove the effect of sent_tokenize because we merge them all again in an array
     doc = hazm.word_tokenize(doc)
-    print("doc", doc)
     return doc
 
 
@@ -17,7 +15,6 @@ def tokenize(doc):
 def normalize(doc, normalizer):
     doc = "".join(doc)
     doc = normalizer.normalize(doc)
-    print("normalized", doc)
     return doc
 
 
@@ -30,11 +27,9 @@ def remove_stop_words(doc):
 def stem(doc, stemmer):
     doc = doc.split(" ")
     for term_index in range(len(doc)):
-        print("stemm")
         print(doc[term_index])
         print(stemmer.stem(doc[term_index]))
         doc[term_index] = stemmer.stem(doc[term_index])
-    print("doc after stemming", doc)
     return doc
 
 
