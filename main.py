@@ -5,6 +5,8 @@ import preprocessing
 import process_query
 import pandas as pd
 import json
+import math
+import matplotlib.pyplot as plt
 
 
 class Document:
@@ -36,6 +38,34 @@ def load_model(file_name):
     return positional_index
 
 
+def plot_zipf(term_freq, with_stopwords):
+
+    term_freq_keys = list(term_freq.keys())
+    term_freq_values = list(term_freq.values())
+    max_frequency = term_freq_values[0]
+    plt.title("Zipf law with stopwords")
+
+
+    if not with_stopwords:
+        term_freq_keys = term_freq_keys[30:]
+        term_freq_values = term_freq_values[30:]
+        max_frequency = term_freq_values[0]
+        plt.title("Zipf law without stopwords")
+
+    l1 = []
+    l2 = []
+    l3 = []
+    for i in term_freq_values:
+        l3.append(math.log(i, 10))
+
+    for i in range(len(term_freq_keys)):
+        l1.append(math.log(i + 1, 10))
+        l2.append(math.log(max_frequency / (i + 1), 10))
+    plt.plot(l1, l2)
+    plt.plot(l1, l3)
+    plt.show()
+
+
 if __name__ == '__main__':
 
     # read excel file (with pandas and numpy)
@@ -59,9 +89,19 @@ if __name__ == '__main__':
 
     elif option == '2':
         positional_index = load_model(file_name="positional_index_json.json")
-    elif option == '4':
+    elif option == '3':
         print("Zipf law")
-    elif option == '5':
+        positional_index = load_model(file_name="positional_index_json.json")
+        term_freq = {}
+        for term in positional_index.keys():
+            term_freq[term] = positional_index[term].total_freq
+        term_freq = dict(sorted(term_freq.items(), key=lambda item: item[1], reverse=True))     # term with higher frequencies have lower indexes
+
+        plot_zipf(term_freq, with_stopwords=True)
+
+        plot_zipf(term_freq, with_stopwords=False)
+
+    elif option == '4':
         print("Heaps law")
     else:
         print("Wrong input!")
