@@ -39,12 +39,10 @@ def load_model(file_name):
 
 
 def plot_zipf(term_freq, with_stopwords):
-
     term_freq_keys = list(term_freq.keys())
     term_freq_values = list(term_freq.values())
     max_frequency = term_freq_values[0]
     plt.title("Zipf law with stopwords")
-
 
     if not with_stopwords:
         term_freq_keys = term_freq_keys[30:]
@@ -66,6 +64,28 @@ def plot_zipf(term_freq, with_stopwords):
     plt.show()
 
 
+def find_token_words_number(num_docs, collection, stemming_status):  # Heaps law
+    collection_heap = preprocessing.preprocessing(collection, with_stemming=stemming_status)
+
+    for num_doc in num_docs:
+        total_words = 0
+        for i in range(num_doc):
+            total_words += len(collection_heap[i].content)
+
+        positional_index_heaps = lists.create_positional_index(collection_heap[:num_doc])
+        total_tokens = len(list(positional_index_heaps.keys()))
+        total_words2 = 0
+        for term in positional_index_heaps:
+            total_words2 += positional_index_heaps[term].total_freq
+
+        if stemming_status:
+            print("with stemming")
+        else:
+            print("without stemming")
+        print("in ", num_doc, total_tokens, total_words)
+        print("*********************")
+
+
 if __name__ == '__main__':
 
     # read excel file (with pandas and numpy)
@@ -81,7 +101,7 @@ if __name__ == '__main__':
     option = input("1) Create model\n2) Load previous model\n3) Zipf law\n4) Heaps law\n")
     if option == '1':
         # call functions for pre-processing
-        collection = preprocessing.preprocessing(collection, with_stop_words=True)
+        collection = preprocessing.preprocessing(collection, with_stemming=True)
 
         # create positional index (and other necessary objects)
         positional_index = lists.create_positional_index(collection)
@@ -89,8 +109,8 @@ if __name__ == '__main__':
 
     elif option == '2':
         positional_index = load_model(file_name="positional_index_json.json")
+
     elif option == '3':
-        print("Zipf law")
         positional_index = load_model(file_name="positional_index_json.json")
         term_freq = {}
         for term in positional_index.keys():
@@ -98,11 +118,15 @@ if __name__ == '__main__':
         term_freq = dict(sorted(term_freq.items(), key=lambda item: item[1], reverse=True))     # term with higher frequencies have lower indexes
 
         plot_zipf(term_freq, with_stopwords=True)
-
         plot_zipf(term_freq, with_stopwords=False)
 
     elif option == '4':
-        print("Heaps law")
+        # num_docs = [500, 1000, 1500, 2000]
+        num_docs = [len(collection)]
+        find_token_words_number(num_docs, collection, stemming_status=False)
+        find_token_words_number(num_docs, collection, stemming_status=True)
+        exit()
+
     else:
         print("Wrong input!")
         exit()

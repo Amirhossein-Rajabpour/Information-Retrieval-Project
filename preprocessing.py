@@ -1,5 +1,4 @@
 import hazm
-# from main import *
 
 
 # extracting Tokens from data
@@ -32,7 +31,7 @@ def stem(doc, stemmer):
 
 
 # call all the preprocessing here
-def preprocessing(array_of_docs, with_stop_words=True):
+def preprocessing(array_of_docs, with_stemming=True):
     stop_words = hazm.stopwords_list()
     array_of_docs_preprocessed = []
     normalizer = hazm.Normalizer()
@@ -40,16 +39,18 @@ def preprocessing(array_of_docs, with_stop_words=True):
 
     for doc in array_of_docs:
         doc.content = normalize(doc.content, normalizer)
-        doc.content = stem(doc.content, stemmer)
-        # doc[0] = tokenize(doc[0])
-        if not with_stop_words:
-            doc.content = remove_stop_words(doc.content)
+        if with_stemming:
+            doc.content = stem(doc.content, stemmer)
+        else:
+            doc.content = doc.content.split(" ")
+
         array_of_docs_preprocessed.append(doc)
     return array_of_docs_preprocessed
 
-
-# if __name__ == '__main__':
+# import numpy as np
+# from main import Document
 #
+# if __name__ == '__main__':
 #
 #     tmp_arr = np.array(["ما اصلاح کتاب ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"])
 #     tmp_arr2 = np.array(["اصلاح نويسه ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"])
@@ -61,5 +62,5 @@ def preprocessing(array_of_docs, with_stop_words=True):
 #     array_of_docs.append(document1)
 #     array_of_docs.append(document2)
 #
-#     prepro_arr = preprocessing(array_of_docs, with_stop_words=False)
+#     prepro_arr = preprocessing(array_of_docs, with_stemming=True)
 #     print(prepro_arr)
