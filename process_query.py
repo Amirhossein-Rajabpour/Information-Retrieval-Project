@@ -7,6 +7,15 @@ def query_stemming(splitted_query, stemmer):
     return splitted_query
 
 
+def find_titles(list_of_doc_ids, collection):
+    list_of_doc_titles = []
+    print("Doc ids sorted by score:\n", list_of_doc_ids, "\n")
+    for doc in collection:
+        if str(doc.id) in list_of_doc_ids:
+            list_of_doc_titles.append(doc.title)
+    return list_of_doc_titles
+
+
 def search_single_word(word, positional_index):
     word_object = positional_index.get(word)
     return word_object.docs_lists()
@@ -75,5 +84,7 @@ def process_query(query, positional_index, collection):
         doc_ids = search_single_word(query[0], positional_index)
     else:
         doc_ids = search_multi_word(query, positional_index, collection)
-    return doc_ids
+
+    list_of_doc_titles = find_titles(doc_ids, collection)
+    return list_of_doc_titles
 

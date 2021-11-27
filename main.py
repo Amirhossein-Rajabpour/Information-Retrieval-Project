@@ -15,15 +15,6 @@ class Document:
         self.url = url
 
 
-def find_titles(list_of_doc_ids, collection):
-    list_of_doc_titles = []
-    print(list_of_doc_ids)
-    for doc in collection:
-        if str(doc.id) in list_of_doc_ids:
-            list_of_doc_titles.append(doc.title)
-    return list_of_doc_titles
-
-
 def save_model(positional_index):
     positional_index_json = {}
     for term_str, term_object in positional_index.items():
@@ -73,11 +64,10 @@ if __name__ == '__main__':
         exit()
 
     # write some functions to handle clients queries
-    print("query processing")
+    print("query processing...")
     query = input("Write your query:\n")
-    list_of_doc_ids = process_query.process_query(query, positional_index, collection)
-    list_of_doc_titles = find_titles(list_of_doc_ids, collection)
+    list_of_doc_titles = process_query.process_query(query, positional_index, collection)
 
-    print("Results:\n")
+    print("Results sorted by scores:")
     for l in list_of_doc_titles:
         print(l)
