@@ -66,8 +66,10 @@ if __name__ == '__main__':
     # write some functions to handle clients queries
     print("query processing...")
     query = input("Write your query:\n")
-    list_of_doc_titles = process_query.process_query(query, positional_index, collection)
+    list_of_doc_titles, list_of_doc_ids = process_query.process_query(query, positional_index, collection)
 
     print("Results sorted by scores:")
-    for l in list_of_doc_titles:
-        print(l)
+    for l in range(len(list_of_doc_titles)):
+        print("doc id: ", list_of_doc_ids[l])
+        print("title: ", list_of_doc_titles[l])
+        print("********************************")

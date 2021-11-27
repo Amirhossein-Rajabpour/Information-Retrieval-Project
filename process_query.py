@@ -27,7 +27,7 @@ def find_longest_substring(query, document, positional_index):    # in this func
     for sub in range(len(query), 1, -1):    # iterates from [len, 2]: from longest to shortest substrings
         if not reached_max_score:
             for term_index in range(len(query)-sub+1):
-                term_positions = positional_index[query[term_index]].pos_in_each_doc[document.id]
+                term_positions = positional_index[query[term_index]].pos_in_each_doc[str(document.id)]
 
                 # check next positions
                 for pos in term_positions:
@@ -67,8 +67,8 @@ def search_multi_word(query, positional_index, collection):
     for index in range(1, len(list_for_different_words)):
         intersection_list = intersection_list.intersection(list_for_different_words[index])
     intersection_list = list(intersection_list)
-    docs_with_score = score_docs(intersection_list, query, collection, positional_index)
-    return docs_with_score
+    ranked_docs = score_docs(intersection_list, query, collection, positional_index)
+    return ranked_docs
 
 
 def process_query(query, positional_index, collection):
@@ -86,5 +86,5 @@ def process_query(query, positional_index, collection):
         doc_ids = search_multi_word(query, positional_index, collection)
 
     list_of_doc_titles = find_titles(doc_ids, collection)
-    return list_of_doc_titles
+    return list_of_doc_titles, list(doc_ids)
 
