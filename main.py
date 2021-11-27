@@ -75,7 +75,7 @@ if __name__ == '__main__':
     # write some functions to handle clients queries
     print("query processing")
     query = input("Write your query:\n")
-    list_of_doc_ids = process_query.process_query(query, positional_index)
+    list_of_doc_ids = process_query.process_query(query, positional_index, collection)
     list_of_doc_titles = find_titles(list_of_doc_ids, collection)
 
     print("Results:\n")
