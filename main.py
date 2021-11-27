@@ -70,6 +70,6 @@ if __name__ == '__main__':
 
     print("Results sorted by scores:")
     for l in range(len(list_of_doc_titles)):
-        print("doc id: ", list_of_doc_ids[l])
+        print("document id: ", list_of_doc_ids[l])
         print("title: ", list_of_doc_titles[l])
         print("********************************")

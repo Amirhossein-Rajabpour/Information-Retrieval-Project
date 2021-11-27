@@ -9,7 +9,7 @@ def query_stemming(splitted_query, stemmer):
 
 def find_titles(list_of_doc_ids, collection):
     list_of_doc_titles = []
-    print("Doc ids sorted by score:\n", list_of_doc_ids, "\n")
+    # print("Doc ids sorted by score:\n", list_of_doc_ids, "\n")
     for doc in collection:
         if str(doc.id) in list_of_doc_ids:
             list_of_doc_titles.append(doc.title)
@@ -31,7 +31,7 @@ def find_longest_substring(query, document, positional_index):    # in this func
 
                 # check next positions
                 for pos in term_positions:
-                    for i in range(1, len(query)+1):    # TODO: this part should be double checked
+                    for i in range(1, len(query)+1):
                         if document.content[pos + i] == query[i]:
                             longest_substring = i + 1
                         else:
@@ -58,17 +58,41 @@ def score_docs(intersection_list, query, collection, positional_index):  # in th
     return doc_scores.keys()
 
 
-def search_multi_word(query, positional_index, collection):
+def intersections_for_different_lengths(query, positional_index):
+    intersections = []
     list_for_different_words = []
     for word in query:
         list_for_different_words.append(positional_index.get(word).docs_lists())
-    # now i should continue the search in the mutual docs
-    intersection_list = set(list_for_different_words[0])
-    for index in range(1, len(list_for_different_words)):
-        intersection_list = intersection_list.intersection(list_for_different_words[index])
-    intersection_list = list(intersection_list)
-    ranked_docs = score_docs(intersection_list, query, collection, positional_index)
-    return ranked_docs
+
+    for length in range(len(query), 0, -1):
+        intersection_with_length = set()    # this set() means we should OR our sets for this length
+        for start in range(len(query)-length+1):
+            inner_intersection = set(list_for_different_words[start])
+            for index in range(start+1, start+length):
+                inner_intersection = inner_intersection.intersection(list_for_different_words[index])
+            intersection_with_length.update(inner_intersection)
+        intersections.append(list(intersection_with_length))
+
+    return intersections
+
+
+def search_multi_word(query, positional_index, collection):
+    # list_for_different_words = []
+    # for word in query:
+    #     list_for_different_words.append(positional_index.get(word).docs_lists())
+    # # now i should continue the search in the mutual docs
+    # intersection_list = set(list_for_different_words[0])
+    # for index in range(1, len(list_for_different_words)):
+    #     intersection_list = intersection_list.intersection(list_for_different_words[index])
+    # intersection_list = list(intersection_list)
+    intersection_list = intersections_for_different_lengths(query, positional_index)
+    ranked_docs_total = set()
+    ranked_docs2 = score_docs(intersection_list[0], query, collection, positional_index)
+    # for i in range(len(intersection_list)):
+    #     ranked_docs = score_docs(intersection_list[i], query, collection, positional_index)
+    #     ranked_docs_total.update(list(ranked_docs))
+    # print(ranked_docs_total)
+    return list(ranked_docs2)
 
 
 def process_query(query, positional_index, collection):
