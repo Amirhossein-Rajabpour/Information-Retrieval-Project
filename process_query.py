@@ -88,6 +88,12 @@ def search_multi_word(query, positional_index, collection):
     intersection_list = intersections_for_different_lengths(query, positional_index)
     ranked_docs_total = set()
     ranked_docs2 = score_docs(intersection_list[0], query, collection, positional_index)
+
+    print("Length of query: ", len(query))
+    for i in range(len(intersection_list)):
+        print(len(intersection_list[i]), "results for query with length of ", len(query)-i)
+    print("")
+
     # for i in range(len(intersection_list)):
     #     ranked_docs = score_docs(intersection_list[i], query, collection, positional_index)
     #     ranked_docs_total.update(list(ranked_docs))

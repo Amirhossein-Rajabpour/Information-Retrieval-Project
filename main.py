@@ -48,7 +48,7 @@ if __name__ == '__main__':
         document = Document(id=index, title=row["title"], content=row["content"], url=row["url"])
         collection.append(document)
 
-    option = input("1) Create model\n2) Load previous model\n")
+    option = input("1) Create model\n2) Load previous model\n3) Zipf law\n4) Heaps law\n")
     if option == '1':
         # call functions for pre-processing
         collection = preprocessing.preprocessing(collection, with_stop_words=True)
@@ -59,6 +59,10 @@ if __name__ == '__main__':
 
     elif option == '2':
         positional_index = load_model(file_name="positional_index_json.json")
+    elif option == '4':
+        print("Zipf law")
+    elif option == '5':
+        print("Heaps law")
     else:
         print("Wrong input!")
         exit()
