@@ -3,6 +3,7 @@
 import lists
 import preprocessing
 import process_query
+import tfidf
 import pandas as pd
 import json
 import math
@@ -147,5 +148,12 @@ if __name__ == '__main__':
             print("********************************")
 
     elif selected_model == "2":
+        collection = preprocessing.preprocessing(collection, with_stemming=True)
         print("query processing using tf-idf model ...")
-
+        query = input("Write your query:\n")
+        first_K_pairs = tfidf.tf_idf(query, positional_index, collection)
+        for doc in first_K_pairs:
+            print("document id: ", doc.id)
+            print("document title: ", doc.title)
+            print("document score: ", first_K_pairs[doc])
+            print("********************************")
