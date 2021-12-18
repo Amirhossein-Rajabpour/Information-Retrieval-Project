@@ -38,9 +38,16 @@ def cos_similarity(query_vector, doc_scores_vector):
     return cos_score
 
 
-# TODO: create champion list
-def create_champion_list(terms):
-    pass
+# create champion list
+def create_champion_list(terms, r=300):
+    # for each term we should consider only r most important docs
+    champion_list = {}
+    for term in terms:
+        # freq_in_each_doc should be sorted by freq and then choose first r
+        sorted_freq_in_docs = dict(sorted(terms[term].freq_in_each_doc.items(), key=lambda item: terms[term].freq_in_each_doc[1], reverse=True))
+        first_r_docs = {i: sorted_freq_in_docs[i] for i in list(sorted_freq_in_docs)[:r]}
+        champion_list[term] = first_r_docs
+    return champion_list
 
 
 # return docs that have at least one word in common with query
@@ -83,10 +90,9 @@ def tf_idf(query, terms, collection):
         similarities[doc] = cos_similarity(query_scores, doc.term_scores)
 
     # sort scores dictionary
-    # TODO: is this sorting correct?
     similarities = dict(sorted(similarities.items(), key=lambda item: item[1], reverse=True))
 
     # return top K docs
     k = 5
-    first_K_pairs = {k: similarities[k] for k in list(similarities)[:k]}
+    first_K_pairs = {i: similarities[i] for i in list(similarities)[:k]}
     return first_K_pairs
