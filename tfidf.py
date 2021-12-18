@@ -13,12 +13,20 @@ def calculate_tf(term, doc):
     return term.freq_in_each_doc.get(doc.id)
 
 
+def magnitude(vector):
+    return math.sqrt(sum(pow(element, 2) for element in vector))
+
 # TODO: calculate cos similarity
-def cos_similarity(query, doc):
+def cos_similarity(query_vector, doc_scores_vector):
     # return cos_score between query and doc
     # find terms (that are in query) in doc and dont iterate over all term in doc
-    score = 0
-    return score
+    numerator = 0
+    for term in query_vector:
+        if term in doc_scores_vector:
+            numerator += (query_vector.get(term) * doc_scores_vector.get(term))
+
+    cos_score = numerator / (magnitude(list(query_vector.values())) * magnitude(list(doc_scores_vector.values())))
+    return cos_score
 
 
 # TODO: create champion list
@@ -65,10 +73,10 @@ def tf_idf(query, terms, collection):
         similarities[doc] = cos_similarity(query_scores, doc.term_scores)
 
     # sort scores dictionary
+    # TODO: is this sorting correct?
     similarities = dict(sorted(similarities.items(), key=lambda item: item[1], reverse=True))
 
     # return top K docs
     k = 5
     first_K_pairs = {k: similarities[k] for k in list(similarities)[:k]}
-
     return first_K_pairs
