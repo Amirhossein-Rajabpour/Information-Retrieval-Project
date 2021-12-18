@@ -16,7 +16,8 @@ def calculate_tf(term, doc):
 def magnitude(vector):
     return math.sqrt(sum(pow(element, 2) for element in vector))
 
-# TODO: calculate cos similarity
+
+# calculate cos similarity
 def cos_similarity(query_vector, doc_scores_vector):
     # return cos_score between query and doc
     # find terms (that are in query) in doc and dont iterate over all term in doc
@@ -46,6 +47,21 @@ def index_elimination(query, collection):
 
 
 def tf_idf(query, terms, collection):
+    # first we should preprocess the query like our dataset
+    normalizer = hazm.Normalizer()
+    stemmer = hazm.Stemmer()
+    query = normalizer.normalize(query)
+    splitted_query = query.split(" ")
+    query = query_stemming(splitted_query, stemmer)
+
+    seen_terms_query = []
+    query_scores = {}
+    for term in query:  # here term is string
+        if term not in seen_terms_query:  # avoid calculating tfidf more than one time for each term in doc
+            # TODO: how to calculate term frequency in query?
+            query_scores[term] = (1 + math.log10(calculate_tf(terms.get(term), query))) * calculate_idf(len(collection), terms.get(term))
+            seen_terms_query.append(term)
+
     for doc in collection:  # create a term score vector for each doc
         seen_terms = []
         for term in doc.content:  # here term is string
@@ -53,22 +69,9 @@ def tf_idf(query, terms, collection):
                 doc.term_scores[term] = (1 + math.log10(calculate_tf(terms.get(term), doc))) * calculate_idf(len(collection), terms.get(term))
                 seen_terms.append(term)
 
-    # first we should preprocess the query like our dataset
-    normalizer = hazm.Normalizer()
-    stemmer = hazm.Stemmer()
-    query = normalizer.normalize(query)
-    splitted_query = query.split(" ")
-    query = query_stemming(splitted_query, stemmer)
-    seen_terms_query = []
-    query_scores = {}
-    for term in query:  # here term is string
-        if term not in seen_terms_query:  # avoid calculating tfidf more than one time for each term in doc
-            # TODO: how to calculate term frequency in query?
-            query_scores[term] = (1 + math.log10(calculate_tf(terms.get(term), query))) * calculate_idf(len(collection),terms.get(term))
-            seen_terms_query.append(term)
-
+    # eliminating docs with no mutual word with query (for faster calculation)
     docs_after_elimination = index_elimination(query, collection)
-    similarities = {}  # {doc: similarity}
+    similarities = {}  # {doc: similarity, ...}
     for doc in docs_after_elimination:
         similarities[doc] = cos_similarity(query_scores, doc.term_scores)
 
