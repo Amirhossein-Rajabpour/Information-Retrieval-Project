@@ -16,6 +16,7 @@ def calculate_tf(term, doc):
 # TODO: calculate cos similarity
 def cos_similarity(query, doc):
     # return cos_score between query and doc
+    # find terms (that are in query) in doc and dont iterate over all term in doc
     score = 0
     return score
 
@@ -23,6 +24,17 @@ def cos_similarity(query, doc):
 # TODO: create champion list
 def create_champion_list(terms):
     pass
+
+
+# return docs that have at least one word in common with query
+def index_elimination(query, collection):
+    docs_after_elimination = []
+    for doc in collection:
+        for term in doc.content:
+            if term in query:
+                docs_after_elimination.append(doc)
+                break
+    return docs_after_elimination
 
 
 def tf_idf(query, terms, collection):
@@ -47,8 +59,9 @@ def tf_idf(query, terms, collection):
             query_scores[term] = (1 + math.log10(calculate_tf(terms.get(term), query))) * calculate_idf(len(collection),terms.get(term))
             seen_terms_query.append(term)
 
+    docs_after_elimination = index_elimination(query, collection)
     similarities = {}  # {doc: similarity}
-    for doc in collection:
+    for doc in docs_after_elimination:
         similarities[doc] = cos_similarity(query_scores, doc.term_scores)
 
     # sort scores dictionary
