@@ -131,13 +131,20 @@ if __name__ == '__main__':
         print("Wrong input!")
         exit()
 
-    # write some functions to handle clients queries
-    print("query processing...")
-    query = input("Write your query:\n")
-    list_of_doc_titles, list_of_doc_ids = process_query.process_query(query, positional_index, collection)
+    # some functions to handle clients queries
+    selected_model = input("1) Binary model\n2) Tf-idf model\n")
 
-    print("Results sorted by scores:")
-    for l in range(len(list_of_doc_titles)):
-        print("document id: ", list_of_doc_ids[l])
-        print("title: ", list_of_doc_titles[l])
-        print("********************************")
+    if selected_model == "1":
+        print("query processing using binary model ...")
+        query = input("Write your query:\n")
+        list_of_doc_titles, list_of_doc_ids = process_query.process_query(query, positional_index, collection)
+
+        print("Results sorted by scores:")
+        for l in range(len(list_of_doc_titles)):
+            print("document id: ", list_of_doc_ids[l])
+            print("title: ", list_of_doc_titles[l])
+            print("********************************")
+
+    elif selected_model == "2":
+        print("query processing using tf-idf model ...")
+
