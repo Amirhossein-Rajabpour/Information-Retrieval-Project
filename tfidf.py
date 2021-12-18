@@ -30,8 +30,8 @@ def create_champion_list(terms):
 def index_elimination(query, collection):
     docs_after_elimination = []
     for doc in collection:
-        for term in doc.content:
-            if term in query:
+        for term in query:
+            if term in doc.content:
                 docs_after_elimination.append(doc)
                 break
     return docs_after_elimination
@@ -70,3 +70,5 @@ def tf_idf(query, terms, collection):
     # return top K docs
     k = 5
     first_K_pairs = {k: similarities[k] for k in list(similarities)[:k]}
+
+    return first_K_pairs
