@@ -9,8 +9,16 @@ def calculate_idf(collection_size, term):  # term is object
 
 
 # calculate term frequency (tf) for a given term. term is object
-def calculate_tf(term, doc):
-    return term.freq_in_each_doc.get(doc.id)
+def calculate_tf_doc(term, doc):
+    return term.freq_in_each_doc.get(str(doc.id))
+
+
+def calculate_tf_query(term, query):    # here term is string
+    frequency = 0
+    for word in query:
+        if word == term:
+            frequency += 1
+    return frequency
 
 
 def magnitude(vector):
@@ -58,15 +66,14 @@ def tf_idf(query, terms, collection):
     query_scores = {}
     for term in query:  # here term is string
         if term not in seen_terms_query:  # avoid calculating tfidf more than one time for each term in doc
-            # TODO: how to calculate term frequency in query?
-            query_scores[term] = (1 + math.log10(calculate_tf(terms.get(term), query))) * calculate_idf(len(collection), terms.get(term))
+            query_scores[term] = (1 + math.log10(calculate_tf_query(term, query))) * calculate_idf(len(collection), terms.get(term))
             seen_terms_query.append(term)
 
     for doc in collection:  # create a term score vector for each doc
         seen_terms = []
         for term in doc.content:  # here term is string
             if term not in seen_terms:  # avoid calculating tfidf more than one time for each term in doc
-                doc.term_scores[term] = (1 + math.log10(calculate_tf(terms.get(term), doc))) * calculate_idf(len(collection), terms.get(term))
+                doc.term_scores[term] = (1 + math.log10(calculate_tf_doc(terms.get(term), doc))) * calculate_idf(len(collection), terms.get(term))
                 seen_terms.append(term)
 
     # eliminating docs with no mutual word with query (for faster calculation)
