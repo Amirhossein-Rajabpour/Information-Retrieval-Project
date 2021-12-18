@@ -15,6 +15,7 @@ class Document:
         self.title = title
         self.content = content
         self.url = url
+        self.term_scores = {}
 
 
 def save_model(positional_index):
