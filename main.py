@@ -8,6 +8,7 @@ import pandas as pd
 import json
 import math
 import matplotlib.pyplot as plt
+import pickle
 
 
 class Document:
@@ -17,6 +18,7 @@ class Document:
         self.content = content
         self.url = url
         self.term_scores = {}
+        self.embeddings = []
 
 
 def save_model(positional_index):
@@ -108,6 +110,10 @@ if __name__ == '__main__':
         # create positional index (and other necessary objects)
         positional_index = lists.create_positional_index(collection)
         save_model(positional_index)
+
+        # TODO: pickle dump
+        with open('collection.obj', 'wb') as collection_file:
+            pickle.dump(collection, collection_file)
 
     elif option == '2':
         positional_index = load_model(file_name="positional_index_json.json")
