@@ -3,7 +3,7 @@ import numpy as np
 from numpy.linalg import norm
 from gensim.models import Word2Vec
 import pickle
-from tfidf import calculate_tf_query, calculate_idf
+from tfidf import calculate_tf_query, calculate_idf, calculate_tf_doc
 
 
 def load_doc_tfidf(path):
@@ -36,12 +36,25 @@ def calculate_query_word_scores(query, terms, collection):
     return query_scores
 
 
-def initialize_word2vec(w2v_model_path, collection):
+def create_doc_tfidf_file(terms, collection):
+    for doc in collection:  # create a term score vector for each doc
+        seen_terms = []
+        for term in doc.content:  # here term is string
+            if term not in seen_terms:  # avoid calculating tfidf more than one time for each term in doc
+                doc.term_scores[term] = (1 + math.log10(calculate_tf_doc(terms.get(term), doc))) * calculate_idf(len(collection), terms.get(term))
+                seen_terms.append(term)
+
+    doc_tfidf = []
+    for doc in collection:
+        doc_tfidf.append(doc.term_scores)
+    return doc_tfidf
+
+
+
+def initialize_word2vec(w2v_model_path, terms, collection):
     # load word2vec model
     w2v_model = Word2Vec.load(w2v_model_path)
-
-    doc_tfidf_path = "D:\\uni\\semester 7\\Information Retrieval\\Project\\IR_Code\\docs_tf_idf.obj"
-    doc_tfidf = load_doc_tfidf(doc_tfidf_path)
+    doc_tfidf = create_doc_tfidf_file(terms, collection)
 
     # create word2vec vector for each doc (weighted average with tf-idf as word weights)
     doc_embeddings = []
