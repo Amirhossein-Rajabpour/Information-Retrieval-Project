@@ -4,6 +4,7 @@ import lists
 import preprocessing
 import process_query
 import tfidf
+import word2vec
 import pandas as pd
 import json
 import math
@@ -175,6 +176,15 @@ if __name__ == '__main__':
         print("query processing using word2vec model ...")
         query = input("Write your query:\n")
 
-        # TODO: initialize word2vec model
+        # initialize word2vec model
+        my_model_path = "D:\\uni\\semester 7\\Information Retrieval\\Project\\IR_Code\\my_w2v_model.model"
+        hazm_model_path = ""
+        collection = word2vec.initialize_word2vec(my_model_path, collection)
 
-        # TODO: show results of query
+        # show results of query
+        first_K_pairs = word2vec.query_word2vec(query, my_model_path, positional_index, collection)
+        for doc in first_K_pairs:
+            print("document id: ", doc.id)
+            print("document title: ", doc.title)
+            print("document score: ", first_K_pairs[doc])
+            print("********************************")
