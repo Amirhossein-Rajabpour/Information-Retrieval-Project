@@ -90,6 +90,15 @@ def find_token_words_number(num_docs, collection, stemming_status):  # Heaps law
         print("*********************")
 
 
+def save_doc_contents(collection):
+    # pickle dump
+    doc_contents = []
+    for doc in collection:
+        doc_contents.append(doc.content)
+    with open('collection.obj', 'wb') as collection_file:
+        pickle.dump(doc_contents, collection_file)
+
+
 if __name__ == '__main__':
 
     # read excel file (with pandas and numpy)
@@ -110,10 +119,7 @@ if __name__ == '__main__':
         # create positional index (and other necessary objects)
         positional_index = lists.create_positional_index(collection)
         save_model(positional_index)
-
-        # TODO: pickle dump
-        with open('collection.obj', 'wb') as collection_file:
-            pickle.dump(collection, collection_file)
+        save_doc_contents(collection)
 
     elif option == '2':
         positional_index = load_model(file_name="positional_index_json.json")
@@ -140,7 +146,7 @@ if __name__ == '__main__':
         exit()
 
     # some functions to handle clients queries
-    selected_model = input("1) Binary model\n2) Tf-idf model\n3) Word2vec model")
+    selected_model = input("1) Binary model\n2) Tf-idf model\n3) Word2vec model\n")
 
     if selected_model == "1":
         print("query processing using binary model ...")
