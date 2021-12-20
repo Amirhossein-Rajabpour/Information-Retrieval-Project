@@ -152,6 +152,7 @@ if __name__ == '__main__':
     if selected_model == "1":
         print("query processing using binary model ...")
         query = input("Write your query:\n")
+        query = preprocessing.preprocess_query(query)
         list_of_doc_titles, list_of_doc_ids = process_query.process_query(query, positional_index, collection)
 
         print("Results sorted by scores:")
@@ -164,6 +165,7 @@ if __name__ == '__main__':
         collection = preprocessing.preprocessing(collection, with_stemming=True)
         print("query processing using tf-idf model ...")
         query = input("Write your query:\n")
+        query = preprocessing.preprocess_query(query)
         first_K_pairs = tfidf.tf_idf(query, positional_index, collection)
         for doc in first_K_pairs:
             print("document id: ", doc.id)
@@ -175,6 +177,7 @@ if __name__ == '__main__':
         collection = preprocessing.preprocessing(collection, with_stemming=True)
         print("query processing using word2vec model ...")
         query = input("Write your query:\n")
+        query = preprocessing.preprocess_query(query)
 
         # initialize word2vec model
         my_model_path = "D:\\uni\\semester 7\\Information Retrieval\\Project\\IR_Code\\my_w2v_model.model"

@@ -1,8 +1,6 @@
 import math
-import hazm
 import numpy as np
 from numpy.linalg import norm
-from process_query import query_stemming
 from gensim.models import Word2Vec
 import pickle
 from tfidf import calculate_tf_query, calculate_idf
@@ -62,13 +60,6 @@ def initialize_word2vec(w2v_model_path, collection):
 def query_word2vec(query, w2v_model_path, terms, collection):
     # load word2vec model
     w2v_model = Word2Vec.load(w2v_model_path)
-
-    # first we should preprocess the query like our dataset
-    normalizer = hazm.Normalizer()
-    stemmer = hazm.Stemmer()
-    query = normalizer.normalize(query)
-    splitted_query = query.split(" ")
-    query = query_stemming(splitted_query, stemmer)
 
     # create word2vec vector for query (weighted average with tf-idf as word weights)
     query_word_scores = calculate_query_word_scores(query, terms, collection)

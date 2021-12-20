@@ -1,6 +1,4 @@
 import math
-import hazm
-from process_query import query_stemming
 import pickle
 
 
@@ -71,13 +69,6 @@ def create_doc_tfidf_file(collection):
 
 
 def tf_idf(query, terms, collection):
-    # first we should preprocess the query like our dataset
-    normalizer = hazm.Normalizer()
-    stemmer = hazm.Stemmer()
-    query = normalizer.normalize(query)
-    splitted_query = query.split(" ")
-    query = query_stemming(splitted_query, stemmer)
-
     seen_terms_query = []
     query_scores = {}
     for term in query:  # here term is string
@@ -92,6 +83,7 @@ def tf_idf(query, terms, collection):
                 doc.term_scores[term] = (1 + math.log10(calculate_tf_doc(terms.get(term), doc))) * calculate_idf(len(collection), terms.get(term))
                 seen_terms.append(term)
 
+    # TODO: change the place of this god damn function
     create_doc_tfidf_file(collection)
 
     # eliminating docs with no mutual word with query (for faster calculation)

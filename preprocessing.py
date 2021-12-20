@@ -2,6 +2,9 @@ import hazm
 
 
 # extracting Tokens from data
+from process_query import query_stemming
+
+
 def tokenize(doc):
     doc = "".join(doc)
     doc = hazm.sent_tokenize(doc)
@@ -29,6 +32,14 @@ def stem(doc, stemmer):
         doc[term_index] = stemmer.stem(doc[term_index])
     return doc
 
+
+def preprocess_query(query):
+    normalizer = hazm.Normalizer()
+    stemmer = hazm.Stemmer()
+    query = normalizer.normalize(query)
+    splitted_query = query.split(" ")
+    query = query_stemming(splitted_query, stemmer)
+    return query
 
 # call all the preprocessing here
 def preprocessing(array_of_docs, with_stemming=True):
