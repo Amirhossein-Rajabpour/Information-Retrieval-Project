@@ -1,6 +1,7 @@
 import math
 import hazm
 from process_query import query_stemming
+import pickle
 
 
 # calculate idf for each term
@@ -61,6 +62,14 @@ def index_elimination(query, collection):
     return docs_after_elimination
 
 
+def create_doc_tfidf_file(collection):
+    doc_tfidf = []
+    for doc in collection:
+        doc_tfidf.append(doc.term_scores)
+    with open('docs_tf_idf.obj', 'wb') as docs_tf_idf_file:
+        pickle.dump(doc_tfidf, docs_tf_idf_file)
+
+
 def tf_idf(query, terms, collection):
     # first we should preprocess the query like our dataset
     normalizer = hazm.Normalizer()
@@ -82,6 +91,8 @@ def tf_idf(query, terms, collection):
             if term not in seen_terms:  # avoid calculating tfidf more than one time for each term in doc
                 doc.term_scores[term] = (1 + math.log10(calculate_tf_doc(terms.get(term), doc))) * calculate_idf(len(collection), terms.get(term))
                 seen_terms.append(term)
+
+    create_doc_tfidf_file(collection)
 
     # eliminating docs with no mutual word with query (for faster calculation)
     docs_after_elimination = index_elimination(query, collection)
