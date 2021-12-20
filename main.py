@@ -178,11 +178,11 @@ if __name__ == '__main__':
 
         # initialize word2vec model
         my_model_path = "D:\\uni\\semester 7\\Information Retrieval\\Project\\IR_Code\\my_w2v_model.model"
-        hazm_model_path = ""
-        collection = word2vec.initialize_word2vec(my_model_path, collection)
+        hazm_model_path = "D:\\uni\\semester 7\\Information Retrieval\\Project\\IR_Code\\w2v_150k_hazm_300_v2.model"
+        collection = word2vec.initialize_word2vec(hazm_model_path, collection)
 
         # show results of query
-        first_K_pairs = word2vec.query_word2vec(query, my_model_path, positional_index, collection)
+        first_K_pairs = word2vec.query_word2vec(query, hazm_model_path, positional_index, collection)
         for doc in first_K_pairs:
             print("document id: ", doc.id)
             print("document title: ", doc.title)
