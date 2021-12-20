@@ -6,7 +6,6 @@ class Term:
         self.total_freq = 0
         self.pos_in_each_doc = {}   # {doc_ic: list positions, ...}
         self.freq_in_each_doc = {}  # {doc_id: freq, ...}
-        self.tfidf_score = 0
 
     def docs_lists(self):
         return self.pos_in_each_doc.keys()
