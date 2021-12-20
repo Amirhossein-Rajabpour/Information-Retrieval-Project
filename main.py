@@ -134,7 +134,7 @@ if __name__ == '__main__':
         exit()
 
     # some functions to handle clients queries
-    selected_model = input("1) Binary model\n2) Tf-idf model\n")
+    selected_model = input("1) Binary model\n2) Tf-idf model\n3) Word2vec model")
 
     if selected_model == "1":
         print("query processing using binary model ...")
@@ -157,3 +157,12 @@ if __name__ == '__main__':
             print("document title: ", doc.title)
             print("document score: ", first_K_pairs[doc])
             print("********************************")
+
+    elif selected_model == "3":
+        collection = preprocessing.preprocessing(collection, with_stemming=True)
+        print("query processing using word2vec model ...")
+        query = input("Write your query:\n")
+
+        # TODO: initialize word2vec model
+
+        # TODO: show results of query
