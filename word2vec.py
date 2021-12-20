@@ -50,7 +50,6 @@ def create_doc_tfidf_file(terms, collection):
     return doc_tfidf
 
 
-
 def initialize_word2vec(w2v_model_path, terms, collection):
     # load word2vec model
     w2v_model = Word2Vec.load(w2v_model_path)
