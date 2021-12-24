@@ -61,8 +61,11 @@ def initialize_word2vec(w2v_model_path, terms, collection):
         doc_vector = np.zeros(300)
         weights_sum = 0
         for token, weight in doc.items():
-            doc_vector += w2v_model.wv[token] * weight
-            weights_sum += weight
+            try:
+                doc_vector += w2v_model.wv[token] * weight
+                weights_sum += weight
+            except:
+                pass
         doc_embeddings.append(doc_vector/weights_sum)
 
     collection = set_doc_embeddings(doc_embeddings, collection)
