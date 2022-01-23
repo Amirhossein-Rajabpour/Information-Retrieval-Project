@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     # read excel file (with pandas and numpy)
     # takes excel file as input --> outputs a numpy array
-    docs_df = pd.read_excel("IR1_7k_news.xlsx")
+    docs_df = pd.read_excel("dataset/IR1_7k_news.xlsx")
 
     # create list of Document objects
     collection = []
@@ -144,9 +144,9 @@ if __name__ == '__main__':
         exit()
 
     elif option == '5':
-        docs_df_50k_1 = pd.read_excel("dataset\IR00_3_11k News.xlsx")
-        docs_df_50k_2 = pd.read_excel("dataset\IR00_3_17k News.xlsx")
-        docs_df_50k_3 = pd.read_excel("dataset\IR00_3_20k News.xlsx")
+        docs_df_50k_1 = pd.read_excel("dataset/IR00_3_11k News.xlsx")
+        docs_df_50k_2 = pd.read_excel("dataset/IR00_3_17k News.xlsx")
+        docs_df_50k_3 = pd.read_excel("dataset/IR00_3_20k News.xlsx")
 
         frames = [docs_df_50k_1, docs_df_50k_2, docs_df_50k_3]
         df_50k = pd.concat(frames)
@@ -195,8 +195,8 @@ if __name__ == '__main__':
         query = preprocessing.preprocess_query(query)
 
         # initialize word2vec model
-        my_model_path = "my_w2v_model.model"
-        hazm_model_path = "w2v_150k_hazm_300_v2.model"
+        my_model_path = "w2v models/my_w2v_model.model"
+        hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
         collection = word2vec.initialize_word2vec(my_model_path, positional_index, collection)
 
         # show results of query
