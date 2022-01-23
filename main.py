@@ -13,11 +13,12 @@ import pickle
 
 
 class Document:
-    def __init__(self, id, title, content, url):
+    def __init__(self, id, title, content, url, topic):
         self.id = id
         self.title = title
         self.content = content
         self.url = url
+        self.topic = topic
         self.term_scores = {}
         self.embeddings = []
 
@@ -109,10 +110,10 @@ if __name__ == '__main__':
     # create list of Document objects
     collection = []
     for index, row in docs_df.iterrows():
-        document = Document(id=index, title=row["title"], content=row["content"], url=row["url"])
+        document = Document(id=index, title=row["title"], content=row["content"], url=row["url"], topic='')
         collection.append(document)
 
-    option = input("1) Create model\n2) Load previous model\n3) Zipf law\n4) Heaps law\n")
+    option = input("1) Create model\n2) Load previous model\n3) Zipf law\n4) Heaps law\n5) Initialize K-means\n")
     if option == '1':
         # call functions for pre-processing
         collection = preprocessing.preprocessing(collection, with_stemming=True)
@@ -142,12 +143,25 @@ if __name__ == '__main__':
         find_token_words_number(num_docs, collection, stemming_status=True)
         exit()
 
+    elif option == '5':
+        docs_df_50k_1 = pd.read_excel("dataset\IR00_3_11k News.xlsx")
+        docs_df_50k_2 = pd.read_excel("dataset\IR00_3_17k News.xlsx")
+        docs_df_50k_3 = pd.read_excel("dataset\IR00_3_20k News.xlsx")
+
+        frames = [docs_df_50k_1, docs_df_50k_2, docs_df_50k_3]
+        df_50k = pd.concat(frames)
+
+        collection_50k = []
+        for index, row in df_50k.iterrows():
+            document = Document(id=index, title='', content=row["content"], url=row["url"], topic=row['topic'])
+            collection_50k.append(document)
+
     else:
         print("Wrong input!")
         exit()
 
     # some functions to handle clients queries
-    selected_model = input("1) Binary model\n2) Tf-idf model\n3) Word2vec model\n")
+    selected_model = input("1) Binary model\n2) Tf-idf model\n3) Word2vec model\n4) K-means model\n ")
 
     if selected_model == "1":
         print("query processing using binary model ...")
