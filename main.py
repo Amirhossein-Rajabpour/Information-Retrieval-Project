@@ -5,6 +5,7 @@ import preprocessing
 import process_query
 import tfidf
 import word2vec
+import kmeans
 import pandas as pd
 import json
 import math
@@ -103,6 +104,7 @@ def save_doc_contents(collection):
 
 if __name__ == '__main__':
 
+    clusters_dict = {}  # just for removing warning
     # read excel file (with pandas and numpy)
     # takes excel file as input --> outputs a numpy array
     docs_df = pd.read_excel("dataset/IR1_7k_news.xlsx")
@@ -156,6 +158,13 @@ if __name__ == '__main__':
             document = Document(id=index, title='', content=row["content"], url=row["url"], topic=row['topic'])
             collection_50k.append(document)
 
+        my_model_path = "w2v models/my_w2v_model.model"
+        hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
+        positional_index = load_model(file_name="positional_index_json.json")
+        collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index, collection_50k)
+        clusters_dict = kmeans.initialize_kmeans(collection_50k, k=100)
+
+
     else:
         print("Wrong input!")
         exit()
@@ -205,5 +214,17 @@ if __name__ == '__main__':
             print("document id: ", doc.id)
             print("document title: ", doc.title)
             print("document score: ", first_K_pairs[doc])
+            print("document url: ", doc.url)
+            print("********************************")
+
+    elif selected_model == "4":
+        # collection = preprocessing.preprocessing(collection, with_stemming=True)
+        print("query processing using k-means model ...")
+        query = input("Write your query:\n")
+        query = preprocessing.preprocess_query(query)
+        first_z_pairs = kmeans.search_kmeans(query, clusters_dict, b=1)
+        for doc in first_z_pairs:
+            print("document id: ", doc.id)
+            print("document score: ", first_z_pairs[doc])   # do we need this?
             print("document url: ", doc.url)
             print("********************************")
