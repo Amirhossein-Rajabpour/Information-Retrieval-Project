@@ -1,6 +1,4 @@
 import word2vec
-from gensim.models import Word2Vec
-import numpy as np
 
 def initialize_knn(collection_50k, collection_7k, k):
     # for every doc in collection 7k calculate the cos similarities for all 50k and then choose k NN
