@@ -32,14 +32,17 @@ def initialize_kmeans(collection_50k, k):
 
     print('dict initialized')
 
-    MAX_ITERATION = 700
+    MAX_ITERATION = 500
     for it in range(MAX_ITERATION):
-        print('iteration ', it)
+        if it % 10 == 0:
+            print('iteration ', it)
+
         tmp_dict = dict.fromkeys(clusters_dict.keys(), [])
         # calculate cosine similarity (distance) between each doc and centers
         for doc in collection_50k:
             highest_score = -1
-            closest_cnt = ''
+            # closest_cnt = list(clusters_dict.keys())[0]     # not a good way
+            closest_cnt = ""
             for cnt in clusters_dict.keys():
                 score = word2vec.cos_similarity_emb(doc.embeddings, cnt.embedding)
                 if score > highest_score:
@@ -47,7 +50,11 @@ def initialize_kmeans(collection_50k, k):
                     closest_cnt = cnt
 
             # assign each doc to its nearest center
-            tmp_dict[closest_cnt].append(doc)
+            try:
+                tmp_dict[closest_cnt].append(doc)
+            except:
+                # print('error')
+                pass
 
         # calculate new centers
         for cnt in tmp_dict.keys():
@@ -61,7 +68,7 @@ def initialize_kmeans(collection_50k, k):
     print('finish iteration')
 
     # save model
-    with open('kmeans_model.obj', 'wb') as kmeans_file:
+    with open('kmeans_model_500it.obj', 'wb') as kmeans_file:
         pickle.dump(clusters_dict, kmeans_file)
 
     print('file saved')
@@ -70,7 +77,7 @@ def initialize_kmeans(collection_50k, k):
     return clusters_dict
 
 
-def search_kmeans(query_embedding, clusters_dict, b=2):
+def search_kmeans(query_embedding, clusters_dict, b=3):
     # compare query vector with cluster centers (cosine similarity)
     cnt_scores = {}
     for cnt in clusters_dict.keys():

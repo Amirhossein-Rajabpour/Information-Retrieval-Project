@@ -15,6 +15,10 @@ import pickle
 import os
 from gensim.models import Word2Vec
 import numpy as np
+import time
+
+my_model_path = "w2v models/my_w2v_model.model"
+hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
 
 
 class Document:
@@ -176,6 +180,7 @@ if __name__ == '__main__':
 
     elif option == '2':
         positional_index = load_model(file_name="positional_index_json.json")
+        positional_index_50k = load_model(file_name="positional_index_50k_json.json")
 
     elif option == '3':
         positional_index = load_model(file_name="positional_index_json.json")
@@ -200,11 +205,14 @@ if __name__ == '__main__':
         else:
             with open('collection50k.obj', 'rb') as collection50k_file:
                 collection_50k = pickle.load(collection50k_file)
+                print('load collection')
 
-        my_model_path = "w2v models/my_w2v_model.model"
-        hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
+        # positional_index = load_model(file_name="positional_index_json.json")
         positional_index_50k = load_model(file_name="positional_index_50k_json.json")
+
+        # collection = preprocessing.preprocessing(collection, with_stemming=True)
         collection_50k = preprocessing.preprocessing(collection_50k, with_stemming=True)
+
         collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index_50k, collection_50k)
         clusters_dict = kmeans.initialize_kmeans(collection_50k, k=10)
 
@@ -215,8 +223,6 @@ if __name__ == '__main__':
             with open('collection50k.obj', 'rb') as collection50k_file:
                 collection_50k = pickle.load(collection50k_file)
 
-        my_model_path = "w2v models/my_w2v_model.model"
-        hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
 
         positional_index = load_model(file_name="positional_index_json.json")
         positional_index_50k = load_model(file_name="positional_index_50k_json.json")
@@ -267,35 +273,57 @@ if __name__ == '__main__':
             print("********************************")
 
     elif selected_model == "3":
-        collection = preprocessing.preprocessing(collection, with_stemming=True)
+        if not os.path.isfile('collection50k.obj'):
+            collection_50k = load_and_process_50k_collection()
+        else:
+            with open('collection50k.obj', 'rb') as collection50k_file:
+                collection_50k = pickle.load(collection50k_file)
+
+        # collection = preprocessing.preprocessing(collection, with_stemming=True)
+        collection_50k = preprocessing.preprocessing(collection_50k, with_stemming=True)
+
         print("query processing using word2vec model ...")
         query = input("Write your query:\n")
         query = preprocessing.preprocess_query(query)
 
-        # initialize word2vec model
-        my_model_path = "w2v models/my_w2v_model.model"
-        hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
-        collection = word2vec.initialize_word2vec(my_model_path, positional_index, collection)
+        start = time.time()
+
+        # collection = word2vec.initialize_word2vec(my_model_path, positional_index, collection)
+        collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index_50k, collection_50k)
 
         # show results of query
-        first_K_pairs = word2vec.query_word2vec(query, my_model_path, positional_index, collection)
+        first_K_pairs = word2vec.query_word2vec(query, my_model_path, positional_index_50k, collection_50k)
+
+        end = time.time()
+        print("time: ", format(end-start))
+
         for doc in first_K_pairs:
             print("document id: ", doc.id)
             print("document title: ", doc.title)
             print("document score: ", first_K_pairs[doc])
             print("document url: ", doc.url)
+            print("category: ", doc.topic)
             print("********************************")
 
     elif selected_model == "4":
-        with open('kmeans_model.obj', 'rb') as kmeans_file:
+        with open('kmeans_model_300it.obj', 'rb') as kmeans_file:
             clusters_dict = pickle.load(kmeans_file)
 
         collection = preprocessing.preprocessing(collection, with_stemming=True)
         print("query processing using k-means model ...")
         query = input("Write your query:\n")
         query = preprocessing.preprocess_query(query)
+
+        positional_index = load_model(file_name="positional_index_json.json")
         query_embedding = extract_query_embedding(query, positional_index, collection)
-        first_z_pairs = kmeans.search_kmeans(query_embedding, clusters_dict, b=1)
+
+        start = time.time()
+
+        first_z_pairs = kmeans.search_kmeans(query_embedding, clusters_dict)
+
+        end = time.time()
+        print("time: ", format(end-start))
+
         for doc in first_z_pairs:
             print("document id: ", doc.id)
             print("document score: ", first_z_pairs[doc])
@@ -310,10 +338,11 @@ if __name__ == '__main__':
         query_with_cat = input("Write your query:\n")
         query_split = query_with_cat.split("cat:")
         topic = query_split[-1]
-        query = query_split[:-1]
+        query = "".join(query_split[:-1])
         print('topic is: ', topic)
+        print('query: ', query)
 
-        query = preprocessing.preprocess_query(query, collection_57k)
+        query = preprocessing.preprocess_query(query)
         collection = preprocessing.preprocessing(collection, with_stemming=True)
         query_embedding = extract_query_embedding(query, positional_index, collection)
 
@@ -322,4 +351,5 @@ if __name__ == '__main__':
             print("document id: ", doc.id)
             print("document score: ", first_z_pairs[doc])
             print("document url: ", doc.url)
+            print("category: ", doc.topic)
             print("********************************")

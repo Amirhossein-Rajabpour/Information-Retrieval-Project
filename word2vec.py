@@ -66,7 +66,8 @@ def initialize_word2vec(w2v_model_path, terms, collection):
                 weights_sum += weight
             except:
                 pass
-        doc_embeddings.append(doc_vector/weights_sum)
+        np.seterr(divide='ignore', invalid='ignore')
+        doc_embeddings.append(doc_vector / weights_sum)
 
     collection = set_doc_embeddings(doc_embeddings, collection)
     return collection
@@ -83,7 +84,7 @@ def query_word2vec(query, w2v_model_path, terms, collection):
     for token, weight in query_word_scores.items():
         query_vector += w2v_model.wv[token] * weight
         weights_sum += weight
-    query_embedding = query_vector/weights_sum
+    query_embedding = query_vector / weights_sum
 
     # calculate cosine similarity for query and docs, return k best docs
     doc_scores = {}
@@ -95,4 +96,3 @@ def query_word2vec(query, w2v_model_path, terms, collection):
     k = 5
     first_K_pairs = {i: doc_scores[i] for i in list(doc_scores)[:k]}
     return first_K_pairs
-
