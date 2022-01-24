@@ -6,11 +6,13 @@ import process_query
 import tfidf
 import word2vec
 import kmeans
+import knn
 import pandas as pd
 import json
 import math
 import matplotlib.pyplot as plt
 import pickle
+import os
 
 
 class Document:
@@ -102,6 +104,29 @@ def save_doc_contents(collection):
         pickle.dump(doc_contents, collection_file)
 
 
+def load_and_process_50k_collection():
+    docs_df_50k_1 = pd.read_excel("dataset/IR00_3_11k News.xlsx")
+    docs_df_50k_2 = pd.read_excel("dataset/IR00_3_17k News.xlsx")
+    docs_df_50k_3 = pd.read_excel("dataset/IR00_3_20k News.xlsx")
+
+    frames = [docs_df_50k_1, docs_df_50k_2, docs_df_50k_3]
+    df_50k = pd.concat(frames)
+
+    collection_50k = []
+    for index, row in df_50k.iterrows():
+        document = Document(id=index, title='', content=row["content"], url=row["url"], topic=row['topic'])
+        collection_50k.append(document)
+
+    collection_50k = preprocessing.preprocessing(collection_50k, with_stemming=True)
+    print('collection preprocessed')
+
+    with open('collection50k.obj', 'wb') as coll50k_file:
+        pickle.dump(collection_50k, coll50k_file)
+
+    print('collection saved')
+    return collection_50k
+
+
 if __name__ == '__main__':
 
     clusters_dict = {}  # just for removing warning
@@ -115,7 +140,7 @@ if __name__ == '__main__':
         document = Document(id=index, title=row["title"], content=row["content"], url=row["url"], topic='')
         collection.append(document)
 
-    option = input("1) Create model\n2) Load previous model\n3) Zipf law\n4) Heaps law\n5) Initialize K-means\n")
+    option = input("1) Create model\n2) Load previous model\n3) Zipf law\n4) Heaps law\n5) Initialize K-means\n6) Initialize KNN\n")
     if option == '1':
         # call functions for pre-processing
         collection = preprocessing.preprocessing(collection, with_stemming=True)
@@ -146,17 +171,11 @@ if __name__ == '__main__':
         exit()
 
     elif option == '5':
-        # docs_df_50k_1 = pd.read_excel("dataset/IR00_3_11k News.xlsx")
-        # docs_df_50k_2 = pd.read_excel("dataset/IR00_3_17k News.xlsx")
-        # docs_df_50k_3 = pd.read_excel("dataset/IR00_3_20k News.xlsx")
-        #
-        # frames = [docs_df_50k_1, docs_df_50k_2, docs_df_50k_3]
-        # df_50k = pd.concat(frames)
-        #
-        # collection_50k = []
-        # for index, row in df_50k.iterrows():
-        #     document = Document(id=index, title='', content=row["content"], url=row["url"], topic=row['topic'])
-        #     collection_50k.append(document)
+        if not os.path.isfile('collection50k.obj'):
+            collection_50k = load_and_process_50k_collection()
+        else:
+            with open('collection50k.obj', 'rb') as collection50k_file:
+                collection_50k = pickle.load(collection50k_file)
 
         my_model_path = "w2v models/my_w2v_model.model"
         hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
@@ -165,13 +184,26 @@ if __name__ == '__main__':
         collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index, collection)
         clusters_dict = kmeans.initialize_kmeans(collection_50k, k=10)
 
+    elif option == '6':
+        if not os.path.isfile('collection50k.obj'):
+            collection_50k = load_and_process_50k_collection()
+        else:
+            with open('collection50k.obj', 'rb') as collection50k_file:
+                collection_50k = pickle.load(collection50k_file)
+
+        collection = preprocessing.preprocessing(collection, with_stemming=True)
+        collection_57k = knn.initialize_knn(collection_50k, collection, k=15)
+
+        with open('collection57k.obj', 'wb') as coll57k_file:
+            pickle.dump(collection_57k, coll57k_file)
+
 
     else:
         print("Wrong input!")
         exit()
 
     # some functions to handle clients queries
-    selected_model = input("1) Binary model\n2) Tf-idf model\n3) Word2vec model\n4) K-means model\n")
+    selected_model = input("1) Binary model\n2) Tf-idf model\n3) Word2vec model\n4) K-means model\n5) KNN model\n")
 
     if selected_model == "1":
         print("query processing using binary model ...")
@@ -221,15 +253,19 @@ if __name__ == '__main__':
     elif selected_model == "4":
         with open('kmeans_model.obj', 'rb') as kmeans_file:
             clusters_dict = pickle.load(kmeans_file)
-        print(clusters_dict)
+        # for k in clusters_dict.keys():
+        #     print(k.embedding)
 
-        # collection = preprocessing.preprocessing(collection, with_stemming=True)
+        collection = preprocessing.preprocessing(collection, with_stemming=True)
         print("query processing using k-means model ...")
         query = input("Write your query:\n")
         query = preprocessing.preprocess_query(query)
         first_z_pairs = kmeans.search_kmeans(query, positional_index, collection, clusters_dict, b=1)
         for doc in first_z_pairs:
             print("document id: ", doc.id)
-            print("document score: ", first_z_pairs[doc])   # do we need this?
+            print("document score: ", first_z_pairs[doc])
             print("document url: ", doc.url)
             print("********************************")
+
+    elif selected_model == "5":
+        pass
