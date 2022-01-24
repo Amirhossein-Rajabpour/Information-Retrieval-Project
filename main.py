@@ -311,6 +311,8 @@ if __name__ == '__main__':
         query_split = query_with_cat.split("cat:")
         topic = query_split[-1]
         query = query_split[:-1]
+        print('topic is: ', topic)
+
         query = preprocessing.preprocess_query(query, collection_57k)
         collection = preprocessing.preprocessing(collection, with_stemming=True)
         query_embedding = extract_query_embedding(query, positional_index, collection)
