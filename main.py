@@ -13,6 +13,8 @@ import math
 import matplotlib.pyplot as plt
 import pickle
 import os
+from gensim.models import Word2Vec
+import numpy as np
 
 
 class Document:
@@ -127,6 +129,21 @@ def load_and_process_50k_collection():
     return collection_50k
 
 
+def extract_query_embedding(query, terms, collection):
+    my_model_path = "w2v models/my_w2v_model.model"
+    w2v_model = Word2Vec.load(my_model_path)
+
+    # create word2vec vector for query (weighted average with tf-idf as word weights)
+    query_word_scores = word2vec.calculate_query_word_scores(query, terms, collection)
+    query_vector = np.zeros(300)
+    weights_sum = 0
+    for token, weight in query_word_scores.items():
+        query_vector += w2v_model.wv[token] * weight
+        weights_sum += weight
+    query_embedding = query_vector/weights_sum
+    return query_embedding
+
+
 if __name__ == '__main__':
 
     clusters_dict = {}  # just for removing warning
@@ -144,6 +161,13 @@ if __name__ == '__main__':
     if option == '1':
         # call functions for pre-processing
         collection = preprocessing.preprocessing(collection, with_stemming=True)
+        # if not os.path.isfile('collection50k.obj'):
+        #     collection_50k = load_and_process_50k_collection()
+        # else:
+        #     with open('collection50k.obj', 'rb') as collection50k_file:
+        #         collection_50k = pickle.load(collection50k_file)
+        #
+        # collection_50k = preprocessing.preprocessing(collection_50k, with_stemming=True)
 
         # create positional index (and other necessary objects)
         positional_index = lists.create_positional_index(collection)
@@ -179,9 +203,9 @@ if __name__ == '__main__':
 
         my_model_path = "w2v models/my_w2v_model.model"
         hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
-        positional_index = load_model(file_name="positional_index_json.json")
-        collection = preprocessing.preprocessing(collection, with_stemming=True)
-        collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index, collection)
+        positional_index_50k = load_model(file_name="positional_index_50k_json.json")
+        collection_50k = preprocessing.preprocessing(collection_50k, with_stemming=True)
+        collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index_50k, collection_50k)
         clusters_dict = kmeans.initialize_kmeans(collection_50k, k=10)
 
     elif option == '6':
@@ -191,12 +215,24 @@ if __name__ == '__main__':
             with open('collection50k.obj', 'rb') as collection50k_file:
                 collection_50k = pickle.load(collection50k_file)
 
+        my_model_path = "w2v models/my_w2v_model.model"
+        hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
+
+        positional_index = load_model(file_name="positional_index_json.json")
+        positional_index_50k = load_model(file_name="positional_index_50k_json.json")
+
         collection = preprocessing.preprocessing(collection, with_stemming=True)
+        collection_50k = preprocessing.preprocessing(collection_50k, with_stemming=True)
+
+        collection_7k = word2vec.initialize_word2vec(my_model_path, positional_index, collection)
+        collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index_50k, collection_50k)
+
+        print('calculating embeddings finished')
+
         collection_57k = knn.initialize_knn(collection_50k, collection, k=15)
 
         with open('collection57k.obj', 'wb') as coll57k_file:
             pickle.dump(collection_57k, coll57k_file)
-
 
     else:
         print("Wrong input!")
@@ -253,14 +289,13 @@ if __name__ == '__main__':
     elif selected_model == "4":
         with open('kmeans_model.obj', 'rb') as kmeans_file:
             clusters_dict = pickle.load(kmeans_file)
-        # for k in clusters_dict.keys():
-        #     print(k.embedding)
 
         collection = preprocessing.preprocessing(collection, with_stemming=True)
         print("query processing using k-means model ...")
         query = input("Write your query:\n")
         query = preprocessing.preprocess_query(query)
-        first_z_pairs = kmeans.search_kmeans(query, positional_index, collection, clusters_dict, b=1)
+        query_embedding = extract_query_embedding(query, positional_index, collection)
+        first_z_pairs = kmeans.search_kmeans(query_embedding, clusters_dict, b=1)
         for doc in first_z_pairs:
             print("document id: ", doc.id)
             print("document score: ", first_z_pairs[doc])
@@ -268,4 +303,18 @@ if __name__ == '__main__':
             print("********************************")
 
     elif selected_model == "5":
-        pass
+        with open('collection57k.obj', 'rb') as coll57k_file:
+            collection_57k = pickle.load(coll57k_file)
+
+        print("query processing using KNN model ...")
+        query = input("Write your query:\n")
+        query = preprocessing.preprocess_query(query, collection_57k)
+        collection = preprocessing.preprocessing(collection, with_stemming=True)
+        query_embedding = extract_query_embedding(query, positional_index, collection)
+
+        first_z_pairs = knn.search_knn(query_embedding, collection_57k, topic)
+        for doc in first_z_pairs:
+            print("document id: ", doc.id)
+            print("document score: ", first_z_pairs[doc])
+            print("document url: ", doc.url)
+            print("********************************")
