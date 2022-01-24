@@ -3,7 +3,7 @@ import word2vec
 def initialize_knn(collection_50k, collection_7k, k):
     # for every doc in collection 7k calculate the cos similarities for all 50k and then choose k NN
     print('initializing knn ...')
-    i = 1
+    i = 0
     for doc in collection_7k:
         if i % 500 == 0:
             print('doc num: ', i)
