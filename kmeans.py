@@ -15,11 +15,12 @@ def initialize_dict(collection_50k, clusters_dict, center_ids):
         clusters_dict[center] = []
     return clusters_dict
 
+
 def termination_condition(a1, a2):
     terminate = True
     for j in range(len(a1)):
         for i in range(a1[j].embedding.shape[0]):
-            if a1[j].embedding[i] > a2[j].embedding[i] * 1.05 or a1[j].embedding[i] < a2[j].embedding[i] * 1.05:
+            if a1[j].embedding[i] > a2[j].embedding[i] * 1.1 or a1[j].embedding[i] < a2[j].embedding[i] * 1.1:
                 terminate = False
     return terminate
 
@@ -32,7 +33,7 @@ def initialize_kmeans(collection_50k, k):
 
     print('dict initialized')
 
-    MAX_ITERATION = 500
+    MAX_ITERATION = 700
     for it in range(MAX_ITERATION):
         print('iteration ', it)
         tmp_dict = dict.fromkeys(clusters_dict.keys(), [])
@@ -52,7 +53,7 @@ def initialize_kmeans(collection_50k, k):
         # calculate new centers
         for cnt in tmp_dict.keys():
             embeddings = [doc.embeddings for doc in tmp_dict[cnt]]
-            cnt.embedding = sum(embeddings) / len(embeddings)     # here should be edited (numpy array)
+            cnt.embedding = sum(embeddings) / len(embeddings)
 
         if termination_condition(list(tmp_dict.keys()), list(clusters_dict.keys())):
             break
