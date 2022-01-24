@@ -307,7 +307,10 @@ if __name__ == '__main__':
             collection_57k = pickle.load(coll57k_file)
 
         print("query processing using KNN model ...")
-        query = input("Write your query:\n")
+        query_with_cat = input("Write your query:\n")
+        query_split = query_with_cat.split("cat:")
+        topic = query_split[-1]
+        query = query_split[:-1]
         query = preprocessing.preprocess_query(query, collection_57k)
         collection = preprocessing.preprocessing(collection, with_stemming=True)
         query_embedding = extract_query_embedding(query, positional_index, collection)
