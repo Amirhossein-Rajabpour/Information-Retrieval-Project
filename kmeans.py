@@ -1,52 +1,107 @@
-from word2vec import cos_similarity_emb
 import random
+import word2vec
+import numpy as np
+from gensim.models import Word2Vec
+import pickle
+
+class Center:
+    def __init__(self, embedding):
+        self.embedding = embedding
+
 
 def initialize_dict(collection_50k, clusters_dict, center_ids):
     for id in center_ids:
-        clusters_dict[collection_50k.iloc[[id]].embeddings] = []   # is it correct? [id]
+        center = Center(embedding=collection_50k[id].embeddings)
+        clusters_dict[center] = []
     return clusters_dict
+
+def termination_condition(a1, a2):
+    terminate = True
+    for j in range(len(a1)):
+        for i in range(a1[j].embedding.shape[0]):
+            if a1[j].embedding[i] > a2[j].embedding[i] * 1.05 or a1[j].embedding[i] < a2[j].embedding[i] * 1.05:
+                terminate = False
+    return terminate
 
 
 def initialize_kmeans(collection_50k, k):
     clusters_dict = {}
-    # TODO: randomly choose "k" docs as centers
-    center_ids = random.sample(range(collection_50k.shape[0]), k)
+    # randomly choose "k" docs as centers
+    center_ids = random.sample(range(len(collection_50k)), k)
     clusters_dict = initialize_dict(collection_50k, clusters_dict, center_ids)
 
-    while True:
+    print('dict initialized')
+
+    MAX_ITERATION = 500
+    for it in range(MAX_ITERATION):
+        print('iteration ', it)
         tmp_dict = dict.fromkeys(clusters_dict.keys(), [])
-        # TODO 1: calculate cosine similarity (distance) between each doc and centers
+        # calculate cosine similarity (distance) between each doc and centers
         for doc in collection_50k:
-            highest_score = 0
+            highest_score = -1
             closest_cnt = ''
             for cnt in clusters_dict.keys():
-                score = cos_similarity_emb(doc.embedding, cnt)
+                score = word2vec.cos_similarity_emb(doc.embeddings, cnt.embedding)
                 if score > highest_score:
                     highest_score = score
                     closest_cnt = cnt
 
-            # TODO 2: assign each doc to its nearest center
+            # assign each doc to its nearest center
             tmp_dict[closest_cnt].append(doc)
 
-        # TODO 3: calculate new centers
-        for old_key, v in tmp_dict.items():
-            h = sum(tmp_dict[old_key]) / len(tmp_dict[old_key])
-            tmp_dict[h] = tmp_dict.pop(old_key)
+        # calculate new centers
+        for cnt in tmp_dict.keys():
+            embeddings = [doc.embeddings for doc in tmp_dict[cnt]]
+            cnt.embedding = sum(embeddings) / len(embeddings)     # here should be edited (numpy array)
 
-        if tmp_dict.keys() == clusters_dict:
+        if termination_condition(list(tmp_dict.keys()), list(clusters_dict.keys())):
             break
         clusters_dict = tmp_dict
 
-    # TODO: return the dictionary: keys are centers, values are docs in that cluster
+    print('finish iteration')
+
+    # save model
+    with open('kmeans_model.obj', 'wb') as kmeans_file:
+        pickle.dump(clusters_dict, kmeans_file)
+
+    print('file saved')
+
+    # return the dictionary: keys are centers, values are docs in that cluster
     return clusters_dict
 
 
-def search_kmeans(query, clusters_dict, b):
-    # TODO: compare query vector with cluster centers (cosine similarity)
+def search_kmeans(query, terms, collection, clusters_dict, b=2):
+    my_model_path = "w2v models/my_w2v_model.model"
+    w2v_model = Word2Vec.load(my_model_path)
 
-    # TODO: find "b" closest clusters
+    # create word2vec vector for query (weighted average with tf-idf as word weights)
+    query_word_scores = word2vec.calculate_query_word_scores(query, terms, collection)
+    query_vector = np.zeros(300)
+    weights_sum = 0
+    for token, weight in query_word_scores.items():
+        query_vector += w2v_model.wv[token] * weight
+        weights_sum += weight
+    query_embedding = query_vector/weights_sum
 
-    # TODO: compare query vector with docs in "b" clusters
+    # compare query vector with cluster centers (cosine similarity)
+    cnt_scores = {}
+    for cnt in clusters_dict.keys():
+        score = word2vec.cos_similarity_emb(query_embedding, cnt.embedding)
+        cnt_scores[cnt] = score
 
-    # TODO: return top docs
-    pass
+    # find "b" closest clusters
+    cnt_scores = dict(sorted(cnt_scores.items(), key=lambda item: item[1], reverse=True))
+    cnt_scores_list = list(cnt_scores)
+
+    # compare query vector with docs in "b" clusters
+    similarities = {}  # {doc: similarity, ...}
+    for i in range(1, b+1):
+        for doc in clusters_dict[cnt_scores_list[i]]:
+            similarities[doc] = word2vec.cos_similarity_emb(query_embedding, doc.embeddings)
+
+    # return top "z" docs
+    # sort scores dictionary
+    similarities = dict(sorted(similarities.items(), key=lambda item: item[1], reverse=True))
+    z = 5
+    first_z_pairs = {i: similarities[i] for i in list(similarities)[:z]}
+    return first_z_pairs

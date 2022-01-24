@@ -146,23 +146,24 @@ if __name__ == '__main__':
         exit()
 
     elif option == '5':
-        docs_df_50k_1 = pd.read_excel("dataset/IR00_3_11k News.xlsx")
-        docs_df_50k_2 = pd.read_excel("dataset/IR00_3_17k News.xlsx")
-        docs_df_50k_3 = pd.read_excel("dataset/IR00_3_20k News.xlsx")
-
-        frames = [docs_df_50k_1, docs_df_50k_2, docs_df_50k_3]
-        df_50k = pd.concat(frames)
-
-        collection_50k = []
-        for index, row in df_50k.iterrows():
-            document = Document(id=index, title='', content=row["content"], url=row["url"], topic=row['topic'])
-            collection_50k.append(document)
+        # docs_df_50k_1 = pd.read_excel("dataset/IR00_3_11k News.xlsx")
+        # docs_df_50k_2 = pd.read_excel("dataset/IR00_3_17k News.xlsx")
+        # docs_df_50k_3 = pd.read_excel("dataset/IR00_3_20k News.xlsx")
+        #
+        # frames = [docs_df_50k_1, docs_df_50k_2, docs_df_50k_3]
+        # df_50k = pd.concat(frames)
+        #
+        # collection_50k = []
+        # for index, row in df_50k.iterrows():
+        #     document = Document(id=index, title='', content=row["content"], url=row["url"], topic=row['topic'])
+        #     collection_50k.append(document)
 
         my_model_path = "w2v models/my_w2v_model.model"
         hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
         positional_index = load_model(file_name="positional_index_json.json")
-        collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index, collection_50k)
-        clusters_dict = kmeans.initialize_kmeans(collection_50k, k=100)
+        collection = preprocessing.preprocessing(collection, with_stemming=True)
+        collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index, collection)
+        clusters_dict = kmeans.initialize_kmeans(collection_50k, k=10)
 
 
     else:
@@ -170,7 +171,7 @@ if __name__ == '__main__':
         exit()
 
     # some functions to handle clients queries
-    selected_model = input("1) Binary model\n2) Tf-idf model\n3) Word2vec model\n4) K-means model\n ")
+    selected_model = input("1) Binary model\n2) Tf-idf model\n3) Word2vec model\n4) K-means model\n")
 
     if selected_model == "1":
         print("query processing using binary model ...")
@@ -218,11 +219,15 @@ if __name__ == '__main__':
             print("********************************")
 
     elif selected_model == "4":
+        with open('kmeans_model.obj', 'rb') as kmeans_file:
+            clusters_dict = pickle.load(kmeans_file)
+        print(clusters_dict)
+
         # collection = preprocessing.preprocessing(collection, with_stemming=True)
         print("query processing using k-means model ...")
         query = input("Write your query:\n")
         query = preprocessing.preprocess_query(query)
-        first_z_pairs = kmeans.search_kmeans(query, clusters_dict, b=1)
+        first_z_pairs = kmeans.search_kmeans(query, positional_index, collection, clusters_dict, b=1)
         for doc in first_z_pairs:
             print("document id: ", doc.id)
             print("document score: ", first_z_pairs[doc])   # do we need this?
