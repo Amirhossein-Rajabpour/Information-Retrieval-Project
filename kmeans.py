@@ -1,8 +1,7 @@
 import random
 import word2vec
-import numpy as np
-from gensim.models import Word2Vec
 import pickle
+
 
 class Center:
     def __init__(self, embedding):
