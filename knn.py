@@ -26,6 +26,7 @@ def search_knn(query_embedding, collection_57k, topic):
     # compare query embedding with docs in that category
     similarities = {}
     docs_topic = [doc for doc in collection_57k if doc.topic == topic]
+    print(len(docs_topic), 'docs in this topic')
     for doc in docs_topic:
         similarities[doc] = word2vec.cos_similarity_emb(query_embedding, doc.embeddings)
 
