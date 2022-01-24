@@ -71,19 +71,7 @@ def initialize_kmeans(collection_50k, k):
     return clusters_dict
 
 
-def search_kmeans(query, terms, collection, clusters_dict, b=2):
-    my_model_path = "w2v models/my_w2v_model.model"
-    w2v_model = Word2Vec.load(my_model_path)
-
-    # create word2vec vector for query (weighted average with tf-idf as word weights)
-    query_word_scores = word2vec.calculate_query_word_scores(query, terms, collection)
-    query_vector = np.zeros(300)
-    weights_sum = 0
-    for token, weight in query_word_scores.items():
-        query_vector += w2v_model.wv[token] * weight
-        weights_sum += weight
-    query_embedding = query_vector/weights_sum
-
+def search_kmeans(query_embedding, clusters_dict, b=2):
     # compare query vector with cluster centers (cosine similarity)
     cnt_scores = {}
     for cnt in clusters_dict.keys():
