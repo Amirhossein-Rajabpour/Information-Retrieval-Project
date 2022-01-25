@@ -134,7 +134,6 @@ def load_and_process_50k_collection():
 
 
 def extract_query_embedding(query, terms, collection):
-    my_model_path = "w2v models/my_w2v_model.model"
     w2v_model = Word2Vec.load(my_model_path)
 
     # create word2vec vector for query (weighted average with tf-idf as word weights)
