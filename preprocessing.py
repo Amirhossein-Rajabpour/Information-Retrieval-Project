@@ -1,6 +1,4 @@
 import hazm
-
-
 # extracting Tokens from data
 from process_query import query_stemming
 
@@ -8,7 +6,7 @@ from process_query import query_stemming
 def tokenize(doc):
     doc = "".join(doc)
     doc = hazm.sent_tokenize(doc)
-    doc = "".join(doc)  # TODO: here we remove the effect of sent_tokenize because we merge them all again in an array
+    doc = "".join(doc)
     doc = hazm.word_tokenize(doc)
     return doc
 
@@ -41,6 +39,7 @@ def preprocess_query(query):
     query = query_stemming(splitted_query, stemmer)
     return query
 
+
 # call all the preprocessing here
 def preprocessing(array_of_docs, with_stemming=True):
     stop_words = hazm.stopwords_list()
@@ -57,21 +56,3 @@ def preprocessing(array_of_docs, with_stemming=True):
 
         array_of_docs_preprocessed.append(doc)
     return array_of_docs_preprocessed
-
-# import numpy as np
-# from main import Document
-#
-# if __name__ == '__main__':
-#
-#     tmp_arr = np.array(["ما اصلاح کتاب ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"])
-#     tmp_arr2 = np.array(["اصلاح نويسه ها و استفاده از نیم‌فاصله پردازش را آسان مي كند"])
-#
-#     array_of_docs = []
-#     document1 = Document(id=1, title="title", content=tmp_arr, url="url")
-#     document2 = Document(id=2, title="title2", content=tmp_arr2, url="url")
-#
-#     array_of_docs.append(document1)
-#     array_of_docs.append(document2)
-#
-#     prepro_arr = preprocessing(array_of_docs, with_stemming=True)
-#     print(prepro_arr)

@@ -1,3 +1,4 @@
+# TODO: name of this class should be binary search
 def query_stemming(splitted_query, stemmer):
     for i in range(len(splitted_query)):
         splitted_query[i] = stemmer.stem(splitted_query[i])

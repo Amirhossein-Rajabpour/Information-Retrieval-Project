@@ -287,11 +287,12 @@ if __name__ == '__main__':
 
         start = time.time()
 
-        # collection = word2vec.initialize_word2vec(my_model_path, positional_index, collection)
-        collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index_50k, collection_50k)
+        collection = word2vec.initialize_word2vec(my_model_path, positional_index, collection)
+        # collection_50k = word2vec.initialize_word2vec(my_model_path, positional_index_50k, collection_50k)
 
         # show results of query
-        first_K_pairs = word2vec.query_word2vec(query, my_model_path, positional_index_50k, collection_50k)
+        first_K_pairs = word2vec.query_word2vec(query, my_model_path, positional_index, collection)
+        # first_K_pairs = word2vec.query_word2vec(query, my_model_path, positional_index_50k, collection_50k)
 
         end = time.time()
         print("time: ", format(end-start))
@@ -301,7 +302,7 @@ if __name__ == '__main__':
             print("document title: ", doc.title)
             print("document score: ", first_K_pairs[doc])
             print("document url: ", doc.url)
-            print("category: ", doc.topic)
+            # print("category: ", doc.topic)
             print("********************************")
 
     elif selected_model == "4":

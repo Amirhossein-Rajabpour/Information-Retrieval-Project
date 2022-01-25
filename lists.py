@@ -1,5 +1,3 @@
-# from main import *
-
 class Term:
     def __init__(self, string):
         self.string = string
@@ -33,7 +31,6 @@ class Term:
 
 
 def create_positional_index(array_of_docs):
-
     terms = {}  # {term_string: term object}
     for doc in array_of_docs:
         term_index = 0
@@ -48,18 +45,3 @@ def create_positional_index(array_of_docs):
                 terms.get(term).update_doc(doc.id, term_index)
             term_index += 1
     return terms
-
-
-
-# if __name__ == '__main__':
-#     tmp_arr = np.array(['ما', 'ه', 'ما'])
-#     tmp_arr2 = np.array(['ما', 'ه', 'ما', 'برا', 'وصل', 'کردن', 'آمدیم!', 'ول', 'برا', 'پردازش،', 'جدا', 'به', 'نیست؟','اصلاح', 'کتاب', 'و', 'استفاده', 'از', 'نیم\u200cفاصله', 'پرداز', 'را', 'آس', 'می\u200cکند'])
-#
-#     array_of_docs = []
-#     document1 = Document(id=111, title="title", content=tmp_arr, url="url")
-#     document2 = Document(id=222, title="title2", content=tmp_arr2, url="url2")
-#
-#     array_of_docs.append(document1)
-#     array_of_docs.append(document2)
-#
-#     terms_pos_index = create_positional_index(array_of_docs)
