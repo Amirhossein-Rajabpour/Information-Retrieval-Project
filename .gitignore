@@ -3,3 +3,4 @@
 *.model
 *.npy
 *.xlsx
+__pycache__/
