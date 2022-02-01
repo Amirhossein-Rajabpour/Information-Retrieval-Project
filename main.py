@@ -17,7 +17,7 @@ from gensim.models import Word2Vec
 import numpy as np
 import time
 import seaborn as sns
-sns.set(style="whitegrid")
+# sns.set(style="whitegrid")
 
 my_model_path = "w2v models/my_w2v_model.model"
 hazm_model_path = "w2v models/w2v_150k_hazm_300_v2.model"
